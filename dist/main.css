@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.text {
+    font-family: 'Catamaran', sans-serif;
+    color: white;
+    font-size: 18px;
+}
+.text.emphasis {
+    color: coral;
+}
+.text.thought {
+    color: rgb(49, 147, 207);
+}
+.text.question {
+    color: rgb(49, 255, 83);
+}
+.hidden {
+    visibility: hidden;
+}
+.text-box .name {
+    background-color: tan;
+    top: 0;
+    bottom: calc(100% - 96px);
+    left: 10px;
+    position: absolute;
+    z-index: 99;
+    padding: 10px 15px;
+    min-width: 5%;
+}
+.text-box .text-block {
+    background-color: black;
+    position: absolute;
+    top: calc(42px);;
+    bottom: 0;
+    left: 10px;
+    right: 10px;
+    z-index: 100;
+}
+.text-box > * {
+    padding: 15px;
+    line-height: 1.25;
+    border-radius: 10px;
+}
+.text-box {
+    position: absolute;
+    height: 30vh;
+    min-height: 150px;
+    width: 100%;
+    max-width: calc(50% + 500px);
+    margin: 0px auto;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+}
+.interface-wrapper {
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    width: 100vw;
+    height: 100vh;
+}
