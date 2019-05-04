@@ -1,6 +1,6 @@
 import { Iris } from "./iris";
 
-var game = new Iris(window.location.hash.substr(1));
+var game = new Iris("https://review.st-ignati.us/chemistry/story.json");
 document.body.appendChild(game.element);
 
 
