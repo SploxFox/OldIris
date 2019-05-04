@@ -1,11 +1,15 @@
 html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    /* overflow: hidden; */
 
     /* for iOS Safari */
     position: relative;
-    height: 100%;
+    height: 1000vh;
+}
+.game {
+    position: fixed;
+    background-color: white;
 }
 .text {
     font-family: 'Catamaran', sans-serif;
