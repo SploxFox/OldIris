@@ -2,7 +2,7 @@ import { StoryManager } from "./story/story-manager";
 import { Visuals } from "./visuals";
 import { UserInterface } from "./user-interface";
 
-export class Game {
+export class Iris {
     storyManager: StoryManager;
     userInterface: UserInterface;
     visuals: Visuals;

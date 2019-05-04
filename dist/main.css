@@ -1,7 +1,11 @@
-body {
+html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+
+    /* for iOS Safari */
+    position: relative;
+    height: 100%;
 }
 .text {
     font-family: 'Catamaran', sans-serif;
