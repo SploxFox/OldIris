@@ -1,9 +1,20 @@
+:root {
+    --light: tan;
+    --dark: rgb(133, 93, 42);
+    --tab: #a58050;
+    --superdark: rgb(53, 36, 14);
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
 html, body {
     margin: 0;
     padding: 0;
     /* overflow: hidden; */
 
-    /* for iOS Safari */
+    
+}
+.mobile {
+    /* for iOS Safari and other browswers that like to have giant address bars that only go away when you scroll down */
     position: relative;
     height: 1000vh;
 }
@@ -29,32 +40,33 @@ html, body {
     visibility: hidden;
 }
 .text-box .name {
-    background-color: tan;
+    background-color: var(--light);
     top: 0;
     bottom: calc(100% - 96px);
     left: 10px;
     position: absolute;
     z-index: 99;
-    padding: 10px 15px;
+    padding: 12px 15px;
     min-width: 5%;
+    color: var(--superdark);
 }
 .text-box .text-block {
     background-color: black;
     position: absolute;
-    top: calc(42px);;
+    top: 42px;
     bottom: 0;
     left: 10px;
     right: 10px;
     z-index: 100;
 }
-.text-box > * {
+.pop, .text-box > * {
     padding: 15px;
     line-height: 1.25;
     border-radius: 10px;
 }
 .text-box {
     position: absolute;
-    height: 30vh;
+    height: calc(25vh + 160px - 10vw);
     min-height: 150px;
     width: 100%;
     max-width: calc(50% + 500px);
@@ -67,4 +79,89 @@ html, body {
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
     width: 100vw;
     height: 100vh;
+}
+.scroll-noti {
+    position: fixed;
+    top: -100vh;
+    left: 10px;
+    right: 10px;
+    transition: 1s;
+    background-color: var(--light);
+    font-weight: 700;
+}
+.tabs {
+    display: flex;
+    position: absolute;
+    top: calc(-21vh - 50px);
+    right: 10px;
+    left: 10px;
+    bottom: calc(100% - 42px);
+    padding: 0px;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+.tab, .tab > * > * {
+    background-color: var(--tab);
+}
+.tab {
+    padding: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    transition: height 0.5s;
+    cursor: pointer;
+    height: 42px;
+}
+.tab.opened {
+    height: 100%;
+}
+.tab > * {
+    margin-top: 12px;
+    padding: 0px 15px 8px 15px;
+    border-right: 0.5px solid var(--dark);
+    border-left: 0.5px solid var(--dark);
+    height: 22px;
+    transition: border 0.5s;
+}
+.tab:first-of-type > * {
+    border-left: none;
+}
+.tab:last-of-type > * {
+    border-right: none;
+}
+.tab.opened > * {
+    border-right: none;
+    border-left: none;
+}
+.tab:last-of-type > * > * {
+    border-top-right-radius: 0;
+    border-bottom: 10px solid var(--tab);
+    bottom: -20px;
+}
+.tab-body {
+    position: absolute;
+    transition: transform 0.5s;
+    top: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: all;
+    background-color: var(--tab);
+    height: calc(100% - 42px);
+}
+.tab.opened .tab-body {
+    /*top: 42px;*/
+    transform: translateY(-100%);
+}
+.icon {
+    height: 1em;
+}
+.tab-content {
+    display: flex;
+    padding-right: 13px;
+    padding-left: 13px;
+    pointer-events: none;
+}
+.tab-content > * {
+    padding-right: 2px;
+    padding-left: 2px;
 }

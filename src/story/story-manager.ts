@@ -3,6 +3,8 @@ import { Cue } from "./cue";
 import { Chapter } from "./chapter";
 import { Episode } from "./episode";
 import { Evidence } from "./evidence";
+import { loadFile } from "../file-loader";
+import { Localizer } from "../localizer";
 
 export class StoryManager {
     private story: Story;
@@ -11,18 +13,23 @@ export class StoryManager {
     private currentCuePosition: number = 0;
     private currentSpeechPosition: number = 0;
     private _currentEvidence: Array<Evidence> = [];
-    constructor(path: string) {
-        var request = new XMLHttpRequest();
-        request.open("GET", path, false);
-        request.send(null);
-        console.log(request.responseText);
-        this.story = JSON.parse(request.responseText);
+    private storyLoadedCallback: Function;
+    constructor(path: string, storyLoadedCallback: Function) {
+        loadFile.bind(this)("story/main-story.json", this.storyFinishedLoading, true);
+        this.storyLoadedCallback = storyLoadedCallback;
+        //console.log(request.responseText);
+        
         //this.story = <Story>(JSON.parse('{ "episodes":[ { "title":"The Scientific Turnabout", "chapters":[ { "title":"Trial Lobby", "content":[ { "character":"$Rookie", "speech":[ "##mode(thought)(My name is $Rookie, and Im a defence attorney.)", "(More specifically, I am a scientific attorney--and today is my first case.)" ] } ] } ] }, { "title":"Turnabout for Futurity", "locked":true } ] }'));
-        console.log(this.story);
+        //console.log(this.story);
+    }
+    storyFinishedLoading(request: XMLHttpRequest): void {
+        //console.log(this);
+        this.story = JSON.parse(request.responseText);
+        this.storyLoadedCallback();
     }
     get currentSpeech(): string {
         var speech = this.story.episodes[this.currentEpisodePosition].chapters[this.currentChapterPosition].content[this.currentCuePosition].speech[this.currentSpeechPosition];
-        console.log(speech);
+        //console.log(speech);
         return speech;
     }
     get currentCue(): Cue {
@@ -55,10 +62,12 @@ export class StoryManager {
         if (this.currentCue.speech && this.currentCue.speech.length - 1 > this.currentSpeechPosition) {
             this.currentSpeechPosition++;
             console.log("Advanced to next speech. New position: " + this.currentSpeechPosition);
-        } else if (this.currentChapter.content.length > this.currentCuePosition) {
+
+        } else if (this.currentChapter.content.length - 1 > this.currentCuePosition) {
             this.currentCuePosition++;
             this.currentSpeechPosition = 0;
             console.log("Advanced to next cue.");
+
         } else if (this.currentEpisode.chapters.length > this.currentChapterPosition) {
             this.currentChapterPosition++;
             this.currentSpeechPosition = 0;

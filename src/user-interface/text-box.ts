@@ -1,8 +1,11 @@
+import { TabbedElement } from "./tabbed-element";
+
 interface QueuedCharacter {
     character: string;
     mode: string;
     speed: string;
     index: number;
+    isLastCharacter: boolean;
 }
 
 export class TextBox {
@@ -11,27 +14,42 @@ export class TextBox {
     textElement: HTMLElement;
     blipNum: number;
     isFinished: boolean;
+    shouldSpeedUp: boolean;
+    tabs: Array<TabbedElement> = [];
+    tabsElement: HTMLDivElement;
     constructor() {
         this.element = document.createElement("div");
         this.element.classList.add("text","text-box");
 
         this.speakerElement = document.createElement("span");
-        this.speakerElement.classList.add("name");
+        this.speakerElement.classList.add("name", "pop");
 
         this.textElement = document.createElement("div");
         this.textElement.classList.add("text-block");
 
+        this.tabsElement = document.createElement("div");
+        this.tabsElement.classList.add("tabs");
+        this.updateTabs();
+        //console.log(this.tabsElement);
+
         this.element.appendChild(this.speakerElement);
         this.element.appendChild(this.textElement);
+        this.element.appendChild(this.tabsElement); 
+    }
+    updateTabs() {
+        while (this.tabsElement.firstElementChild) { this.tabsElement.firstElementChild.remove(); }
+        for (var i = 0; i < this.tabs.length; i++) {
+            this.tabsElement.appendChild(this.tabs[i].tabElement);
+        }
     }
     clear() {
         while (this.textElement.firstElementChild) { this.textElement.firstElementChild.remove(); }
         this.speakerElement.textContent = "";
         this.blipNum = 0;
-        this.isFinished = false;
     }
     showText(speaker: string, text: string) {
         this.clear();
+        this.isFinished = false;
 
         this.speakerElement.textContent = speaker;
 
@@ -48,7 +66,8 @@ export class TextBox {
                     character: text[index],
                     mode: mode,
                     speed: speed,
-                    index: index
+                    index: index,
+                    isLastCharacter: index + 1 >= text.length
                 }
                 return qchar;
             } else {
@@ -88,7 +107,7 @@ export class TextBox {
 
         function nextChar(index: number) {
             //console.log("index: " + index + "  text length: " + text.length);
-            window.setTimeout(function () {
+            var prepareToAddChar = function() {
                 if (index < text.length) {
                     var char = parseChar(index);
                     var nextIndex = char.index + 1;
@@ -97,7 +116,12 @@ export class TextBox {
                     }
                     nextChar.bind(this)(nextIndex);
                 }
-            }.bind(this), TextBox.getWaitTime(speed));
+            }.bind(this);
+            if (this.shouldSpeedUp) {
+                prepareToAddChar();
+            } else {
+                window.setTimeout(prepareToAddChar.bind(this), TextBox.getWaitTime(speed));
+            }
         }
 
         for (var i = 0; i < text.length; i++) {
@@ -156,5 +180,12 @@ export class TextBox {
         if (char.character == " ") {
             this.blipNum = 0;
         }
+        if (char.isLastCharacter) {
+            this.isFinished = true;
+            this.shouldSpeedUp = false;
+        }
+    }
+    finish(): void {
+        this.shouldSpeedUp = true;
     }
 }

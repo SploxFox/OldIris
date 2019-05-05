@@ -1,6 +1,7 @@
 import { StoryManager } from "./story/story-manager";
 import { Visuals } from "./visuals";
 import { UserInterface } from "./user-interface";
+import { Localizer } from "./localizer";
 
 export class Iris {
     storyManager: StoryManager;
@@ -8,39 +9,84 @@ export class Iris {
     visuals: Visuals;
     element: HTMLElement;
     touchStarted: boolean = false;
-    constructor(path: string) {
-        this.userInterface = new UserInterface();
-        this.visuals = new Visuals();
-        this.storyManager = new StoryManager(path);
+    guiWrapper: HTMLElement;
+    finishedLoading: boolean;
+    interfaceHasLoaded: boolean;
+    storyHasLoaded: boolean;
+    constructor() {
+        this.finishedLoading = false;
+        this.interfaceHasLoaded = false;
+        this.storyHasLoaded = false;
 
-        //temp code
-        if (!this.storyManager.currentCue.speech) {
-            this.storyManager.goToNextSpeech();
-        }
+        this.visuals = new Visuals();
 
         this.element = document.createElement("div");
         this.element.classList.add("game");
-        var guiWrapper = document.createElement("div");
-        guiWrapper.classList.add("interface-wrapper");
-        guiWrapper.appendChild(this.userInterface.textBox.element);
-        this.element.appendChild(guiWrapper);
+        this.guiWrapper = document.createElement("div");
+        this.guiWrapper.classList.add("interface-wrapper");
+        this.element.appendChild(this.guiWrapper);
 
-        this.userInterface.textBox.showText(this.storyManager.currentCue.character, this.storyManager.currentSpeech);
-
-        window.addEventListener("touchstart", function() {
-            this.advance();
+        window.addEventListener("touchstart", function(event: TouchEvent) {
+            event.touches[0].target.dispatchEvent(new CustomEvent("interacted",{}));
+            if (!(event.target as HTMLElement).classList.contains("interactable")) {
+                this.advance();
+            }
             this.touchStarted = true;
         }.bind(this));
-        window.addEventListener("click", function() {
+        window.addEventListener("click", function(event: Event) {
+            event.target.dispatchEvent(new CustomEvent("interacted",{}));
             if (this.touchStarted) {
                 this.touchStarted = false;
-            } else {
+            } else if (!(event.target as HTMLElement).classList.contains("interactable")) {
                 this.advance();
             }
         }.bind(this));
     }
-    advance(): void {
-        this.storyManager.goToNextSpeech();
+    loadStory(path: string) {
+        this.storyManager = new StoryManager(path,this.storyLoaded.bind(this));
+    }
+    localizationLoaded(type: string): void {
+        console.log(this);
+        this.userInterface = new UserInterface();
+        this.interfaceHasLoaded = true;
+        this.guiWrapper.appendChild(this.userInterface.textBox.element);
+        this.checkLoadStatus();
+    }
+    storyLoaded(): void {
+        this.storyHasLoaded = true;
+        this.checkLoadStatus();
+    }
+    checkLoadStatus(): void {
+        //this is probably just temporary
+        if (this.interfaceHasLoaded && this.storyHasLoaded) {
+            this.finishedLoading = true;
+            this.start();
+        }
+    }
+    start(): void {
+        //temp code
+        if (!this.storyManager.currentCue.speech) {
+            this.storyManager.goToNextSpeech();
+        }
         this.userInterface.textBox.showText(this.storyManager.currentCue.character, this.storyManager.currentSpeech);
+    }
+    advance(): void {
+        if (this.userInterface.textBox.isFinished) {
+            this.storyManager.goToNextSpeech();
+            this.userInterface.textBox.showText(this.storyManager.currentCue.character, this.storyManager.currentSpeech);
+        } else {
+            this.userInterface.textBox.finish();
+        }
+    }
+    showScrollNotification(): void {
+        var scrollNoti = document.createElement("div");
+        this.guiWrapper.appendChild(scrollNoti);
+
+        scrollNoti.textContent = "Scroll Down";
+        scrollNoti.classList.add("scroll-noti","pop","text");
+        scrollNoti.style.top = "10px";
+        window.setTimeout(function() {
+            scrollNoti.style.top = "-100vh";
+        },5000)
     }
 }
