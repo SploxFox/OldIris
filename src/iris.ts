@@ -34,12 +34,18 @@ export class Iris {
             this.touchStarted = true;
         }.bind(this));
         window.addEventListener("click", function(event: Event) {
-            event.target.dispatchEvent(new CustomEvent("interacted",{}));
             if (this.touchStarted) {
                 this.touchStarted = false;
-            } else if (!(event.target as HTMLElement).classList.contains("interactable")) {
-                this.advance();
+                return;
             }
+            event.target.dispatchEvent(new CustomEvent("interacted",{}));
+            if (!(event.target as HTMLElement).classList.contains("interactable")) {
+                console.log(this.userInterface.textBox);
+                if (!this.userInterface.textBox.tabsOpen) {
+                    this.advance();
+                }
+            }
+            
         }.bind(this));
     }
     loadStory(path: string) {

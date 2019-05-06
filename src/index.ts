@@ -1,6 +1,7 @@
 import { Iris } from "./iris";
 import { TabbedElement } from "./user-interface/tabbed-element";
 import { Localizer } from "./localizer";
+import { OrganizerTab } from "./user-interface/organizer-tab";
 
 
 //The order of the creation of the localizer and game may create a race condition.
@@ -18,9 +19,11 @@ if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elain
 
 function locLoaded() {
     game.localizationLoaded.bind(game)();
-    game.userInterface.textBox.tabs.push(new TabbedElement("save", "icons/save.svg"));
-    game.userInterface.textBox.tabs.push(new TabbedElement("chat-history", "icons/chat.svg"));
-    game.userInterface.textBox.tabs.push(new TabbedElement("organizer", "icons/organizer.svg"));
+    game.userInterface.textBox.tabs = [
+        new TabbedElement("save", "icons/save.svg"),
+        new TabbedElement("chat-history", "icons/chat.svg"),
+        new OrganizerTab(game.storyManager)
+    ]
     game.userInterface.textBox.updateTabs();
 }
 

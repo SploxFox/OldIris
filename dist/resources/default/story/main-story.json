@@ -7,7 +7,29 @@
                "title": "Trial Lobby",
                "content": [
                   {
-                     "newEvidence": "case-brief",
+                     "evidence": "new",
+                     "id": "case-brief",
+                     "name": "Case Brief",
+                     "description": "The victim was killed while performing a chemistry experiment by an exploding test tube. Chemical burns and glass punctures were found on the body.",
+                     "notification": false
+                  },
+                  {
+                     "evidence": "new",
+                     "id": "case-brief",
+                     "name": "Case Brief",
+                     "description": "The victim was killed while performing a chemistry experiment by an exploding test tube. Chemical burns and glass punctures were found on the body.",
+                     "notification": false
+                  },
+                  {
+                     "evidence": "new",
+                     "id": "case-brief",
+                     "name": "Case Brief",
+                     "description": "The victim was killed while performing a chemistry experiment by an exploding test tube. Chemical burns and glass punctures were found on the body.",
+                     "notification": false
+                  },
+                  {
+                     "evidence": "new",
+                     "id": "case-brief",
                      "name": "Case Brief",
                      "description": "The victim was killed while performing a chemistry experiment by an exploding test tube. Chemical burns and glass punctures were found on the body.",
                      "notification": false

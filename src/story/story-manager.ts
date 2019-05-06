@@ -50,11 +50,12 @@ export class StoryManager {
         return this._currentEvidence;
     }
     register() {
-        if (this.currentCue.newevidence) {
+        if (this.currentCue.evidence) {
             this._currentEvidence.push({
                 name: this.currentCue.name,
-                id: this.currentCue.newevidence,
-                image: this.currentCue.image ? this.currentCue.image : "https://previews.123rf.com/images/iqoncept/iqoncept0901/iqoncept090100094/4221417-a-white-wrinkled-piece-of-paper-background-for-slides-brochures-and-presentations-.jpg"
+                id: this.currentCue.id,
+                description: this.currentCue.description,
+                image: this.currentCue.image ? this.currentCue.image : undefined
             });
         }
     }

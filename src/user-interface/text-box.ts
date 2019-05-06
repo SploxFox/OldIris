@@ -42,6 +42,15 @@ export class TextBox {
             this.tabsElement.appendChild(this.tabs[i].tabElement);
         }
     }
+    get tabsOpen(): boolean {
+        for (var i = 0; i < this.tabs.length; i++) {
+            if (this.tabs[i].state == "opened") {
+                //console.log(this.tabs[i].state);
+                return true;
+            }
+        }
+        return false;
+    }
     clear() {
         while (this.textElement.firstElementChild) { this.textElement.firstElementChild.remove(); }
         this.speakerElement.textContent = "";

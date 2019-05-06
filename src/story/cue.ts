@@ -7,7 +7,8 @@ export interface Cue {
     autotransition?: boolean;
     focus?: string;
     transition?: string;
-    newevidence?: string;
+    evidence?: "new" | "update" | "discard";
+    id?: string;
     name?: string;
     description?: string;
     notification?: boolean;
