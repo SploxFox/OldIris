@@ -71,15 +71,15 @@ export class Iris {
     }
     start(): void {
         //temp code
-        if (!this.storyManager.currentCue.speech) {
+        if (!this.storyManager.cue.speech) {
             this.storyManager.goToNextSpeech();
         }
-        this.userInterface.textBox.showText(this.storyManager.currentCue.character, this.storyManager.currentSpeech);
+        this.userInterface.textBox.showText(this.storyManager.cue.character, this.storyManager.speech);
     }
     advance(): void {
         if (this.userInterface.textBox.isFinished) {
             this.storyManager.goToNextSpeech();
-            this.userInterface.textBox.showText(this.storyManager.currentCue.character, this.storyManager.currentSpeech);
+            this.userInterface.textBox.showText(this.storyManager.cue.character, this.storyManager.speech);
         } else {
             this.userInterface.textBox.finish();
         }

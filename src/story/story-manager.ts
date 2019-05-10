@@ -8,11 +8,11 @@ import { Localizer } from "../localizer";
 
 export class StoryManager {
     private story: Story;
-    private currentEpisodePosition: number = 0;
-    private currentChapterPosition: number = 0;
-    private currentCuePosition: number = 0;
-    private currentSpeechPosition: number = 0;
-    private _currentEvidence: Array<Evidence> = [];
+    private episodePosition: number = 0;
+    private chapterPosition: number = 0;
+    private cuePosition: number = 0;
+    private speechPosition: number = 0;
+    private _evidence: Array<Evidence> = [];
     private storyLoadedCallback: Function;
     constructor(path: string, storyLoadedCallback: Function) {
         loadFile.bind(this)("story/main-story.json", this.storyFinishedLoading, true);
@@ -27,52 +27,52 @@ export class StoryManager {
         this.story = JSON.parse(request.responseText);
         this.storyLoadedCallback();
     }
-    get currentSpeech(): string {
-        var speech = this.story.episodes[this.currentEpisodePosition].chapters[this.currentChapterPosition].content[this.currentCuePosition].speech[this.currentSpeechPosition];
+    get speech(): string {
+        var speech = this.story.episodes[this.episodePosition].chapters[this.chapterPosition].content[this.cuePosition].speech[this.speechPosition];
         //console.log(speech);
         return speech;
     }
-    get currentCue(): Cue {
-        var cue = this.story.episodes[this.currentEpisodePosition].chapters[this.currentChapterPosition].content[this.currentCuePosition];
+    get cue(): Cue {
+        var cue = this.story.episodes[this.episodePosition].chapters[this.chapterPosition].content[this.cuePosition];
         if (cue == undefined) {
             throw "Error: Found cue to be undefined!";
         }
         //console.log(cue);
         return cue;
     }
-    get currentChapter(): Chapter {
-        return this.story.episodes[this.currentEpisodePosition].chapters[this.currentChapterPosition]
+    get chapter(): Chapter {
+        return this.story.episodes[this.episodePosition].chapters[this.chapterPosition]
     }
-    get currentEpisode(): Episode {
-        return this.story.episodes[this.currentEpisodePosition];
+    get episode(): Episode {
+        return this.story.episodes[this.episodePosition];
     }
-    get currentEvidence(): Array<Evidence> {
-        return this._currentEvidence;
+    get evidence(): Array<Evidence> {
+        return this._evidence;
     }
     register() {
-        if (this.currentCue.evidence) {
-            this._currentEvidence.push({
-                name: this.currentCue.name,
-                id: this.currentCue.id,
-                description: this.currentCue.description,
-                image: this.currentCue.image ? this.currentCue.image : undefined
+        if (this.cue.evidence) {
+            this._evidence.push({
+                name: this.cue.name,
+                id: this.cue.id,
+                description: this.cue.description,
+                image: this.cue.image ? this.cue.image : undefined
             });
         }
     }
     advance() {
-        if (this.currentCue.speech && this.currentCue.speech.length - 1 > this.currentSpeechPosition) {
-            this.currentSpeechPosition++;
-            console.log("Advanced to next speech. New position: " + this.currentSpeechPosition);
+        if (this.cue.speech && this.cue.speech.length - 1 > this.speechPosition) {
+            this.speechPosition++;
+            console.log("Advanced to next speech. New position: " + this.speechPosition);
 
-        } else if (this.currentChapter.content.length - 1 > this.currentCuePosition) {
-            this.currentCuePosition++;
-            this.currentSpeechPosition = 0;
+        } else if (this.chapter.content.length - 1 > this.cuePosition) {
+            this.cuePosition++;
+            this.speechPosition = 0;
             console.log("Advanced to next cue.");
 
-        } else if (this.currentEpisode.chapters.length > this.currentChapterPosition) {
-            this.currentChapterPosition++;
-            this.currentSpeechPosition = 0;
-            this.currentCuePosition = 0;
+        } else if (this.episode.chapters.length > this.chapterPosition) {
+            this.chapterPosition++;
+            this.speechPosition = 0;
+            this.cuePosition = 0;
             console.log("Advanced to next chapter.");
         }
     }
@@ -80,6 +80,6 @@ export class StoryManager {
         do {
             this.register();
             this.advance();
-        } while (!this.currentCue.speech);
+        } while (!this.cue.speech);
     }
 }

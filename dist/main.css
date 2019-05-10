@@ -186,6 +186,11 @@ html, body {
     margin-bottom: 15px;
     flex-shrink: 0;
 }
+.organizer .evidence.selected {
+    /* background-color: rgb(126, 101, 65);*/
+    border: 2px solid black;
+    padding: 13px;
+}
 .organizer > .evidence-container {
     display: flex;
     flex-direction: column;
@@ -203,4 +208,7 @@ html, body {
 .evidence-name {
     font-weight: 700;
     display: block;
+}
+.evidence * {
+    pointer-events: none;
 }
