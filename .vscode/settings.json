@@ -1,0 +1,11 @@
+{
+    "saveAndRun": {
+        "commands": [
+            {
+                "match": "\\.ts$",
+                "cmd": "npx webpack",
+                "silent": true
+            }
+        ]
+    }
+}

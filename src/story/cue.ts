@@ -1,3 +1,5 @@
+import { Question } from "./question";
+
 export interface Cue {
     character?: string;
     speech?: Array<string>;
@@ -13,4 +15,5 @@ export interface Cue {
     description?: string;
     notification?: boolean;
     image?: string;
+    question?: Question;
 }

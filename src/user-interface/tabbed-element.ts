@@ -69,11 +69,11 @@ export class TabbedElement {
     showLabel(): void {
         this.tabTextElement.textContent = ((window as any).localizer.localize(this.tabName));
         this.tabContentElement.appendChild(this.tabTextElement);
-        console.log("shown");
+        //console.log("shown");
         this.labelShown = true;
     }
     hideLabel(): void {
-        console.log("hidden");
+        //console.log("hidden");
         this.tabTextElement.parentNode.removeChild(this.tabTextElement);
         this.labelShown = false;
     }

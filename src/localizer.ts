@@ -20,7 +20,18 @@ export class Localizer {
         }.bind(this));
     }
     localize(name: string): string {
-        return this.localized[name];
+        if (this.localized[name]) {
+            return this.localized[name];
+        } else {
+            //We don't have a localized version of this word. Let's just guess!
+            var words = name.split("-");
+            var finalString = "";
+            for (var word in words) {
+                word = word.charAt(0).toUpperCase() + word.substring(1);
+                finalString += word;
+            }
+            return finalString;
+        }
     }
     get language(): string {
         return this._language;
