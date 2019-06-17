@@ -1,7 +1,6 @@
 import { StoryManager } from "./story/story-manager";
 import { Visuals } from "./visuals";
 import { UserInterface } from "./user-interface";
-import { Localizer } from "./localizer";
 import { OrganizerTab } from "./user-interface/organizer-tab";
 import { TabbedElement } from "./user-interface/tabbed-element";
 import { Evidence } from "./story/evidence";

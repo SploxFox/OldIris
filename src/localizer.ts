@@ -1,4 +1,5 @@
 import { loadFile } from "./file-loader";
+import { localizer } from ".";
 
 export class Localizer {
     private localized: { [index: string]: string};
@@ -7,7 +8,6 @@ export class Localizer {
     constructor(language: string, localizationLoadedCallback?: () => void) {
         this.localizationLoadedCallback = localizationLoadedCallback;
         this._language = language;
-        (window as any).localizer = this;
         /*for (let key in this.localized) {
             loadFile.bind(this)(key + ".json", function(request: XMLHttpRequest) {
                 this.localized[key] = JSON.parse(request.responseText);

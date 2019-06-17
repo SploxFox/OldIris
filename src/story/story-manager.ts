@@ -4,7 +4,6 @@ import { Chapter } from "./chapter";
 import { Episode } from "./episode";
 import { Evidence } from "./evidence";
 import { loadFile } from "../file-loader";
-import { Localizer } from "../localizer";
 import { Choice } from "./choice";
 
 export class StoryManager {

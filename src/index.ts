@@ -5,7 +5,7 @@ import { OrganizerTab } from "./user-interface/organizer-tab";
 
 
 var game = new Iris();
-(window as any).localizer = new Localizer("english", locLoaded);
+export var localizer = new Localizer("english", locLoaded);
 game.loadStory("main-story.json");
 
 document.body.appendChild(game.element);
