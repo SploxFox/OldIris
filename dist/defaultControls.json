@@ -1,0 +1,22 @@
+{
+    "movement": {
+        "directions": {
+            "forwards": {
+                "keyCode": 87,
+                "direction": [0, 1]
+            },
+            "backwards": {
+                "keyCode": 83,
+                "direction": [0, -1]
+            },
+            "right": {
+                "keyCode": 68,
+                "direction": [1, 0]
+            },
+            "left": {
+                "keyCode": 65,
+                "direction": [-1, 0]
+            }
+        }
+    }
+}

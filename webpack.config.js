@@ -1,7 +1,8 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/index.tsx',
+    mode: "development",
     devtool: 'inline-source-map',
   module: {
     rules: [
@@ -20,3 +21,4 @@ module.exports = {
     path: path.resolve(__dirname, 'dist')
   }
 };
+

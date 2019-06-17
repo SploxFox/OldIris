@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.DigitalControllerContainer {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    --pressed: rgba(0,0,0,1);
+    --unpressed: rgba(255, 255, 255, 1);
+}
+
+.DigitalControllerContainer .DigitalControllerStick {
+    width: 200px;
+    height: 200px;
+    background-color: var(--pressed);
+    border-radius: 50%;
+    position: relative;
+}
+
+.DigitalControllerContainer .DigitalControllerStick .DigitalControllerStickTop {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    background-color: var(--unpressed);
+    border-radius: 50%;
+    position: absolute;
+}
