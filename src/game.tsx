@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { DigitalController } from "./digital-controller";
 import { PlayerInputManager, InputStatus } from "./player-input-manager";
+import { Vector3 } from "three";
 
 export class Game {
     element: HTMLElement;
@@ -35,7 +36,9 @@ export class Game {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
         this.camera.position.set(0,10,10);
-        this.camera.rotation.set(-45,0,0);
+        this.camera.rotation.set((-3 * Math.PI)/4, 0, 0);
+        
+        console.log(this.camera);
 
         /*var light = new THREE.PointLight( 0xff0000, 1, 100 );
         light.position.set( 50, 50, 50 );
@@ -58,11 +61,18 @@ export class Game {
         if(this.playerInputManager) {
             this.playerInputManager.update();
             this.digitalController.setStatus(this.playerInputManager.inputStatus);
+            if(this.player) {
+                //this.camera.lookAt(this.player.object.position);
+                var arr = this.playerInputManager.controlVector.toArray();
+                arr.splice(1,0,0);
+                this.player.object.position.add((new Vector3()).fromArray(arr));
+                //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
+            }
         }
         this.renderer.render(this.scene,this.camera);
     }
     addEntity(entity: Entity) {
         console.log(entity);
-        this.scene.add(entity.visualMesh);
+        this.scene.add(entity.object);
     }
 }

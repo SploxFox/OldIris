@@ -28,4 +28,5 @@ body {
     background-color: var(--unpressed);
     border-radius: 50%;
     position: absolute;
+    transition: 0.05s;
 }
