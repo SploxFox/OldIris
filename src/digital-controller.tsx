@@ -41,7 +41,7 @@ export class DigitalController extends React.Component<{inputStatus: InputStatus
             <div className="DigitalControllerContainer">
                 <div className="DigitalControllerStick">
                     <div className="DigitalControllerStickTop" style={{
-                        transform: "translateX(calc(" + this.state.inputStatus.movement.controlVector.x * 50 + "px - 50%)) translateY(calc(" + this.state.inputStatus.movement.controlVector.y * -50 + "px - 50%))"
+                        transform: "translateX(calc(" + this.state.inputStatus.movement.controlVector.x * 50 + "px - 50%)) translateY(calc(" + this.state.inputStatus.movement.controlVector.y * 50 + "px - 50%))"
                        }}></div>
                 </div>
             </div>

@@ -23,11 +23,11 @@ export const defaultControls: ControlBindings = {
         directions: {
             forwards: {
                 "code": "KeyW",
-                "direction": [0, 1]
+                "direction": [0, -1]
             },
             backwards: {
                 "code": "KeyS",
-                "direction": [0, -1]
+                "direction": [0, 1]
             },
             right: {
                 "code": "KeyD",

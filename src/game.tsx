@@ -15,7 +15,9 @@ export class Game {
     player: Entity;
     playerInputManager: PlayerInputManager;
     digitalController: DigitalController;
+    private entities: Entity[];
     constructor() {
+        this.entities = [];
         //Adding our default CSS
         var cssLink = document.createElement("link");
 
@@ -36,9 +38,7 @@ export class Game {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
         this.camera.position.set(0,10,10);
-        this.camera.rotation.set((-3 * Math.PI)/4, 0, 0);
-        
-        console.log(this.camera);
+        this.camera.rotation.set((-1.3 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
         /*var light = new THREE.PointLight( 0xff0000, 1, 100 );
         light.position.set( 50, 50, 50 );
@@ -58,6 +58,9 @@ export class Game {
     }
     animate() {
         requestAnimationFrame(this.animate.bind(this));
+        for (var i = 0; i < this.entities.length; i++) {
+            this.entities[i].update(1);
+        }
         if(this.playerInputManager) {
             this.playerInputManager.update();
             this.digitalController.setStatus(this.playerInputManager.inputStatus);
@@ -65,14 +68,15 @@ export class Game {
                 //this.camera.lookAt(this.player.object.position);
                 var arr = this.playerInputManager.controlVector.toArray();
                 arr.splice(1,0,0);
-                this.player.object.position.add((new Vector3()).fromArray(arr));
+                this.player.object.position.add((new Vector3()).fromArray(arr).multiplyScalar(0.2));
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
             }
         }
         this.renderer.render(this.scene,this.camera);
     }
     addEntity(entity: Entity) {
-        console.log(entity);
+        //console.log(entity);
+        this.entities.push(entity);
         this.scene.add(entity.object);
     }
 }
