@@ -18,13 +18,13 @@ export class PlayerInputManager {
         window.addEventListener("keydown",(ev) => {
             if (!this.keysDown.includes(ev.code)) {
                 this.keysDown.push(ev.code);
-                console.log(this.keysDown);
+                //console.log(this.keysDown);
             }
             
         });
         window.addEventListener("keyup", (ev) => {
             this.keysDown.splice(this.keysDown.indexOf(ev.code),1);
-            console.log(this.keysDown);
+            ///console.log(this.keysDown);
         });
         this.inputStatus = {
             movement: {

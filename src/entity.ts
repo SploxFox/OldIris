@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Vector3 } from "three";
+import { lerp, wrapAroundLerp } from "./math";
 
 var THREE = (window as any).THREE = require('three');
 require("three/examples/js/loaders/GLTFLoader");
@@ -8,13 +9,17 @@ export class Entity {
     public object: THREE.Group;
     public gravity: boolean;
     private velocity: THREE.Vector3;
+    public controlVector: THREE.Vector2;
     constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
         this.object.add(this.collisionMesh);
+        this.object.castShadow = true;
+        this.object.receiveShadow = true;
         this.collisionMesh.visible = false;
         this.gravity = false;
-        this.velocity = new THREE.Vector3(0,0,0)
+        this.velocity = new THREE.Vector3(0,0,0);
+        this.controlVector = new THREE.Vector3(0,0,0);
     }
     /**
      * Function to be called every frame before render
@@ -26,10 +31,17 @@ export class Entity {
         }
         this.object.position.add(this.velocity);
         this.velocity.multiplyScalar(0.95);
+
+        var arr = this.controlVector.toArray();
+        arr.splice(1,0,0);
+        this.object.position.add((new Vector3()).fromArray(arr).multiplyScalar(0.2));
+        if (this.controlVector.length() > 0) {
+            //console.log("Control Vector: " + this.controlVector.angle() * (180/Math.PI) + "  Current Rotation: " + this.object.rotation.y * (180/Math.PI));
+            this.object.rotation.y = wrapAroundLerp(this.object.rotation.y, this.controlVector.setX(this.controlVector.x * -1).angle(), 0.1, Math.PI * 2);
+        }
     }
-    checkForCollision(otherEntity: Entity): boolean {
-    for (var vertexIndex = 0; vertexIndex < this.collisionMesh.geometry.vertices.length; vertexIndex++)
-        {       
+    /*checkForCollision(otherEntity: Entity): boolean {
+        for (var vertexIndex = 0; vertexIndex < this.collisionMesh.geometry.vertices.length; vertexIndex++){       
             var localVertex = (this.object.collisionMesh as any).geometry.vertices[vertexIndex].clone();
             var globalVertex = (this.object.collisionMesh as any).matrix.multiplyVector3(localVertex);
             var directionVector = globalVertex.subSelf( (this.collisionMesh as any).position );
@@ -41,7 +53,7 @@ export class Entity {
                 // a collision occurred... do something...
             }
         }
-    }
+    }*/
 
     /**
      * Loads a collisionable entity from the paths given in the two parameters. This does not actually put the entity in the game; it just loads it into memory.

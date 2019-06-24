@@ -10,7 +10,7 @@ export class Game {
     element: HTMLElement;
     readonly scene: THREE.Scene;
     readonly camera: THREE.Camera;
-    readonly renderer: THREE.Renderer;
+    readonly renderer: THREE.WebGLRenderer;
     party: Entity[];
     player: Entity;
     playerInputManager: PlayerInputManager;
@@ -40,13 +40,15 @@ export class Game {
         this.camera.position.set(0,10,10);
         this.camera.rotation.set((-1.3 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
-        /*var light = new THREE.PointLight( 0xff0000, 1, 100 );
-        light.position.set( 50, 50, 50 );
-        this.scene.add( light );*/
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+        directionalLight.position.set( 0, 10, 0 );
+        directionalLight.castShadow = true;
+        this.scene.add( directionalLight );
         var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-        this.scene.add(light);
+        //this.scene.add(light);
 
         this.renderer = new THREE.WebGLRenderer(/*{alpha: true}*/);
+        this.renderer.shadowMap.enabled = true;
         this.renderer.setSize( window.innerWidth, window.innerHeight );
 
         //GUI
@@ -66,9 +68,7 @@ export class Game {
             this.digitalController.setStatus(this.playerInputManager.inputStatus);
             if(this.player) {
                 //this.camera.lookAt(this.player.object.position);
-                var arr = this.playerInputManager.controlVector.toArray();
-                arr.splice(1,0,0);
-                this.player.object.position.add((new Vector3()).fromArray(arr).multiplyScalar(0.2));
+                this.player.controlVector = this.playerInputManager.controlVector;
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
             }
         }
