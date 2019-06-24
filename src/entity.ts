@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Vector3 } from "three";
+import { Vector3, Geometry, Vector } from "three";
 import { lerp, wrapAroundLerp } from "./math";
 
 var THREE = (window as any).THREE = require('three');
@@ -10,10 +10,17 @@ export class Entity {
     public gravity: boolean;
     private velocity: THREE.Vector3;
     public controlVector: THREE.Vector2;
-    constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh: THREE.Mesh) {
+    public collidable: boolean;
+    constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
-        this.object.add(this.collisionMesh);
+        if (collisionMesh) {
+            this.object.add(this.collisionMesh);
+            this.collidable = true;
+        } else {
+            this.collidable = false;
+        }
+        
         this.visualMesh.castShadow = true;
         this.visualMesh.receiveShadow = true;
         this.collisionMesh.visible = false;
@@ -40,20 +47,25 @@ export class Entity {
             this.object.rotation.y = wrapAroundLerp(this.object.rotation.y, this.controlVector.setX(this.controlVector.x * -1).angle(), 0.1, Math.PI * 2);
         }
     }
-    /*checkForCollision(otherEntity: Entity): boolean {
-        for (var vertexIndex = 0; vertexIndex < this.collisionMesh.geometry.vertices.length; vertexIndex++){       
-            var localVertex = (this.object.collisionMesh as any).geometry.vertices[vertexIndex].clone();
-            var globalVertex = (this.object.collisionMesh as any).matrix.multiplyVector3(localVertex);
-            var directionVector = globalVertex.subSelf( (this.collisionMesh as any).position );
-
-            var ray = new THREE.Ray( (this.collisionMesh as any).position, directionVector.clone().normalize() );
-            var collisionResults = ray.intersectObjects( collidableMeshList );
-            if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
-            {
-                // a collision occurred... do something...
+    checkForCollision(collisionableEntities: Entity[]): boolean {
+        //console.log(this.collisionMesh.geometry);
+        var geometry = new THREE.Geometry().fromBufferGeometry(this.collisionMesh.geometry);
+        if (geometry.vertices != undefined) {
+            for (var vertexIndex = 0; vertexIndex < geometry.vertices.length; vertexIndex++){       
+                var localVertex: Vector3 = geometry.vertices[vertexIndex].clone();
+                //var globalVertex = this.collisionMesh.matrix.multiplyVector3(localVertex);
+                var globalVertex = localVertex.applyMatrix4(this.collisionMesh.matrix);
+                var directionVector = globalVertex.sub( this.collisionMesh.position );
+    
+                var ray = new THREE.Raycaster( this.collisionMesh.position, directionVector.clone().normalize() );
+                //console.log(collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh));
+                var collisionResults = ray.intersectObjects(collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh));
+                return ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
             }
+        } else {
+            throw "Geometry has no vertices!"
         }
-    }*/
+    }
 
     /**
      * Loads a collisionable entity from the paths given in the two parameters. This does not actually put the entity in the game; it just loads it into memory.

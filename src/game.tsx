@@ -63,6 +63,7 @@ export class Game {
         this.animate();
     }
     animate() {
+        //window.setTimeout(this.animate.bind(this), 150)
         requestAnimationFrame(this.animate.bind(this));
         for (var i = 0; i < this.entities.length; i++) {
             this.entities[i].update(1);
@@ -74,9 +75,13 @@ export class Game {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlVector = this.playerInputManager.controlVector;
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
+                console.log(this.player.checkForCollision(this.collisionableEntities));
             }
         }
         this.renderer.render(this.scene,this.camera);
+    }
+    get collisionableEntities(): Entity[] {
+        return this.entities.filter((entity) => entity.collidable)
     }
     get player() {
         return this._player;
