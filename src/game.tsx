@@ -12,10 +12,11 @@ export class Game {
     readonly camera: THREE.Camera;
     readonly renderer: THREE.WebGLRenderer;
     party: Entity[];
-    player: Entity;
+    _player: Entity;
     playerInputManager: PlayerInputManager;
     digitalController: DigitalController;
     private entities: Entity[];
+    private directionalLight: THREE.DirectionalLight;
     constructor() {
         this.entities = [];
         //Adding our default CSS
@@ -37,18 +38,21 @@ export class Game {
         //THREE stuff
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-        this.camera.position.set(0,10,10);
-        this.camera.rotation.set((-1.3 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
+        this.camera.position.set(0,20,7);
+        this.camera.rotation.set((-1.8 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
-        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
-        directionalLight.position.set( 0, 10, 0 );
-        directionalLight.castShadow = true;
-        this.scene.add( directionalLight );
-        var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-        //this.scene.add(light);
+        this.directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+        this.directionalLight.position.set( 10, 5, -10 );
+        this.directionalLight.castShadow = true;
+        
+        this.scene.add(this.directionalLight);
+        
+        var ambientLight = new THREE.AmbientLight( 0xffffff, 0.6);
+        this.scene.add(ambientLight);
 
         this.renderer = new THREE.WebGLRenderer(/*{alpha: true}*/);
         this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
         this.renderer.setSize( window.innerWidth, window.innerHeight );
 
         //GUI
@@ -73,6 +77,13 @@ export class Game {
             }
         }
         this.renderer.render(this.scene,this.camera);
+    }
+    get player() {
+        return this._player;
+    }
+    set player(value: Entity) {
+        this._player = value;
+        this.directionalLight.target = this.player.object;
     }
     addEntity(entity: Entity) {
         //console.log(entity);

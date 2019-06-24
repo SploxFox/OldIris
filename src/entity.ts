@@ -14,8 +14,8 @@ export class Entity {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
         this.object.add(this.collisionMesh);
-        this.object.castShadow = true;
-        this.object.receiveShadow = true;
+        this.visualMesh.castShadow = true;
+        this.visualMesh.receiveShadow = true;
         this.collisionMesh.visible = false;
         this.gravity = false;
         this.velocity = new THREE.Vector3(0,0,0);
