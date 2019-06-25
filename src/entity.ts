@@ -11,6 +11,8 @@ export class Entity {
     private velocity: THREE.Vector3;
     public controlVector: THREE.Vector2;
     public collidable: boolean;
+
+    public oldLines: THREE.Line[];
     constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
@@ -27,6 +29,8 @@ export class Entity {
         this.gravity = false;
         this.velocity = new THREE.Vector3(0,0,0);
         this.controlVector = new THREE.Vector3(0,0,0);
+
+        this.oldLines = [];
     }
     /**
      * Function to be called every frame before render
@@ -47,24 +51,54 @@ export class Entity {
             this.object.rotation.y = wrapAroundLerp(this.object.rotation.y, this.controlVector.setX(this.controlVector.x * -1).angle(), 0.1, Math.PI * 2);
         }
     }
-    checkForCollision(collisionableEntities: Entity[]): boolean {
+    checkForCollision(collisionableEntities: Entity[], scene: THREE.Scene): boolean {
         //console.log(this.collisionMesh.geometry);
-        var geometry = new THREE.Geometry().fromBufferGeometry(this.collisionMesh.geometry);
+        for (var i = 0; i < this.oldLines.length; i++) {
+            scene.remove(this.oldLines[i]);
+        }
+        this.oldLines = [];
+        var geometry: THREE.Geometry = new THREE.Geometry().fromBufferGeometry(this.visualMesh.geometry);
+        //var geometry: THREE.Geometry = this.visualMesh.geometry as THREE.Geometry;
         if (geometry.vertices != undefined) {
-            for (var vertexIndex = 0; vertexIndex < geometry.vertices.length; vertexIndex++){       
-                var localVertex: Vector3 = geometry.vertices[vertexIndex].clone();
-                //var globalVertex = this.collisionMesh.matrix.multiplyVector3(localVertex);
-                var globalVertex = localVertex.applyMatrix4(this.collisionMesh.matrix);
-                var directionVector = globalVertex.sub( this.collisionMesh.position );
-    
-                var ray = new THREE.Raycaster( this.collisionMesh.position, directionVector.clone().normalize() );
-                //console.log(collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh));
-                var collisionResults = ray.intersectObjects(collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh));
-                return ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
+            var collisionResults: THREE.Intersection[] = [];
+            for (var vertexIndex = 0; vertexIndex < geometry.faces.length; vertexIndex++){
+                
+                var startPosition = this.object.position;
+                var direction = geometry.faces[vertexIndex].normal.clone().normalize();
+
+                var ray = new THREE.Raycaster( startPosition, direction, 0, 4);
+                var entities = collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh);
+                collisionResults.concat(ray.intersectObjects(entities, true));
+
+
+
+                var pointA = startPosition.clone();
+                //var direction = this.object.localToWorld(localVertex).clone();
+
+                var distance = 4; // at what distance to determine pointB
+
+                var pointB = new THREE.Vector3();
+                pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+
+                var lineGeometry = new THREE.Geometry();
+                lineGeometry.vertices.push( pointA );
+                lineGeometry.vertices.push( pointB );
+                var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+                var line = new THREE.Line( lineGeometry, material );
+                this.oldLines.push(line);
+                scene.add(line);
+
+                
             }
+            //console.log(geometry.faces.length);
+            return ( collisionResults.length > 0 && collisionResults[0].distance < direction.length() );
         } else {
             throw "Geometry has no vertices!"
         }
+        /*for (var i = 0; i < collisionableEntities.length; i++) {
+            return collisionableEntities[i].
+        }*/
+        //return false;
     }
 
     /**

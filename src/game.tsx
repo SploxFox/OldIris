@@ -75,7 +75,7 @@ export class Game {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlVector = this.playerInputManager.controlVector;
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
-                console.log(this.player.checkForCollision(this.collisionableEntities));
+                console.log(this.player.checkForCollision(this.collisionableEntities, this.scene));
             }
         }
         this.renderer.render(this.scene,this.camera);
