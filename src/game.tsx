@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Entity } from "./entity";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
-import { DigitalController } from "./digital-controller";
+import { DigitalController } from "./interface/digital-controller";
 import { PlayerInputManager, InputStatus } from "./player-input-manager";
 import { Vector3 } from "three";
 
@@ -17,8 +17,12 @@ export class Game {
     digitalController: DigitalController;
     private entities: Entity[];
     private directionalLight: THREE.DirectionalLight;
+    public textVariables: {
+        [index: string]: number | string;
+    };
     constructor() {
         this.entities = [];
+        this.textVariables = {};
         //Adding our default CSS
         var cssLink = document.createElement("link");
 

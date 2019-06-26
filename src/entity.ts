@@ -57,20 +57,26 @@ export class Entity {
             scene.remove(this.oldLines[i]);
         }
         this.oldLines = [];
-        var geometry: THREE.Geometry = new THREE.Geometry().fromBufferGeometry(this.visualMesh.geometry);
+        var geometry: THREE.Geometry = new THREE.Geometry().fromBufferGeometry(this.collisionMesh.geometry);
         //var geometry: THREE.Geometry = this.visualMesh.geometry as THREE.Geometry;
         if (geometry.vertices != undefined) {
             var collisionResults: THREE.Intersection[] = [];
             for (var vertexIndex = 0; vertexIndex < geometry.faces.length; vertexIndex++){
-                
+                this.collisionMesh.updateMatrixWorld();
+                this.object.updateMatrixWorld();
+
                 var startPosition = this.object.position;
-                var direction = geometry.faces[vertexIndex].normal.clone().normalize();
+                var worldPositionOfVertex = this.collisionMesh.localToWorld(geometry.faces[vertexIndex].normal);
+                var direction = new Vector3();
+                direction = direction.subVectors(this.object.position, worldPositionOfVertex);
+                direction = direction.normalize();
 
-                var ray = new THREE.Raycaster( startPosition, direction, 0, 4);
-                var entities = collisionableEntities.filter((entity) => entity != this).map((entity) => entity.collisionMesh);
-                collisionResults.concat(ray.intersectObjects(entities, true));
-
-
+                var raycaster: THREE.Raycaster = new THREE.Raycaster( startPosition, direction);
+                var entities = collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh);
+                console.log(entities);
+                collisionResults.concat(raycaster.intersectObjects(entities, true));
+                
+                //console.log("Ray origin: " + raycaster.ray.origin.toArray() + "  Ray direction: " + raycaster.ray.direction.toArray());
 
                 var pointA = startPosition.clone();
                 //var direction = this.object.localToWorld(localVertex).clone();

@@ -1,4 +1,4 @@
-import { InputStatus } from "./player-input-manager";
+import { InputStatus } from "../player-input-manager";
 import * as React from "react";
 /*
 const containerStyle = {
