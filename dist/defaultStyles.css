@@ -30,3 +30,22 @@ body {
     position: absolute;
     transition: 0.05s;
 }
+
+.formatted-text-character {
+    display: inline-block;
+}
+
+.fade-in {
+    animation: fade-in 0.5s ease;
+}
+
+@keyframes fade-in {
+    0% {
+        transform: translateY(100%);
+        /*opacity: 0;*/
+    }
+    100% {
+        transform: translateY(0%);
+        /*opacity: 1;*/
+    }
+}

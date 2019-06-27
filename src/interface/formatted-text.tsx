@@ -48,7 +48,7 @@ export interface FormattedTextState {
 
 export interface FormattedTextVariables {
     [index: string]: number | string;
-    timeBetweenCharacters: number;
+    timeBetweenCharacters?: number;
     
     //characterInBlockIndex: number;
 }
@@ -107,6 +107,6 @@ interface FormattedTextCharacterProps {
 
 export class FormattedTextCharacter extends React.Component<FormattedTextCharacterProps,{}> {
     render() {
-        return <span className={"formatted-text-character " + this.props.classes.join(" ")}>{this.props.character}</span>
+        return <span className={"formatted-text-character fade-in" + this.props.classes.join(" ")}>{this.props.character}</span>
     }
 }
