@@ -73,7 +73,7 @@ export class Entity {
 
                 var raycaster: THREE.Raycaster = new THREE.Raycaster( startPosition, direction);
                 var entities = collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh);
-                console.log(entities);
+                //console.log(entities);
                 collisionResults.concat(raycaster.intersectObjects(entities, true));
                 
                 //console.log("Ray origin: " + raycaster.ray.origin.toArray() + "  Ray direction: " + raycaster.ray.direction.toArray());
