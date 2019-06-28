@@ -36,7 +36,7 @@ export class FormattedText extends Array<FormattedTextSet | string | FormattedTe
 
 interface FormattedTextProps {
     formattedText: FormattedText;
-    textVariables: FormattedTextVariables;
+    textVariables?: FormattedTextVariables;
     
 }
 

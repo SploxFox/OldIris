@@ -13,6 +13,7 @@ export class Entity {
     public collidable: boolean;
 
     public oldLines: THREE.Line[];
+    public actionDescriptor: string;
     constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
