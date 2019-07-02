@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 export interface ActionDescriptorProps {
-    label: FormattedText;
+    text: FormattedText;
     location: Vector2;
 }
 
@@ -13,9 +13,10 @@ export class ActionDescriptor extends React.Component<ActionDescriptorProps,{}> 
         return (
             <div className="action-descriptor" style={{
                 left: this.props.location.x,
-                top: this.props.location.y
+                top: this.props.location.y,
+                backgroundColor: "rgba(0,0,0,0.5)"
             }}>
-                <FormattedTextComponent formattedText={this.props.label}></FormattedTextComponent>
+                <FormattedTextComponent formattedText={this.props.text}></FormattedTextComponent>
             </div>
         );
     }
