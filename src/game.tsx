@@ -4,7 +4,9 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { DigitalController } from "./interface/digital-controller";
 import { PlayerInputManager, InputStatus } from "./player-input-manager";
-import { Vector3 } from "three";
+import { Vector3, Vector2 } from "three";
+import { ActionDescriptor } from "./interface/action-descriptor";
+import { Interface } from "./interface/interface";
 
 export class Game {
     element: HTMLElement;
@@ -14,13 +16,17 @@ export class Game {
     party: Entity[];
     _player: Entity;
     playerInputManager: PlayerInputManager;
-    digitalController: DigitalController;
+    private interface: Interface;
     private entities: Entity[];
     private directionalLight: THREE.DirectionalLight;
     public textVariables: {
         [index: string]: number | string;
     };
+    private mouseTooltip: ActionDescriptor;
+    private container: HTMLDivElement;
     constructor() {
+        
+
         this.entities = [];
         this.textVariables = {};
         //Adding our default CSS
@@ -35,10 +41,8 @@ export class Game {
         var controllerDiv = document.createElement("div");
         PlayerInputManager.loadControlBindings().then((controlBindings) => {
             this.playerInputManager = new PlayerInputManager(controlBindings);
-            
-            ReactDOM.render(<DigitalController ref={(dc) => this.digitalController = dc} inputStatus={this.playerInputManager.inputStatus}></DigitalController>, controllerDiv);
         });
-
+        
         //THREE stuff
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -62,9 +66,11 @@ export class Game {
         //GUI
         this.element = document.createElement("div");
         this.element.appendChild(this.renderer.domElement);
-        this.element.appendChild(controllerDiv);
+        this.element.appendChild(this.container);
 
         this.animate();
+
+        this.interface = new Interface(this);
     }
     animate() {
         //window.setTimeout(this.animate.bind(this), 150)
@@ -74,7 +80,7 @@ export class Game {
         }
         if(this.playerInputManager) {
             this.playerInputManager.update();
-            this.digitalController.setStatus(this.playerInputManager.inputStatus);
+            // -->   this.interface.digitalController.setStatus(this.playerInputManager.inputStatus);
             if(this.player) {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlVector = this.playerInputManager.controlVector;
@@ -83,6 +89,7 @@ export class Game {
             }
         }
         this.renderer.render(this.scene,this.camera);
+        this.interface.update();
     }
     get collisionableEntities(): Entity[] {
         return this.entities.filter((entity) => entity.collidable)
@@ -98,5 +105,13 @@ export class Game {
         //console.log(entity);
         this.entities.push(entity);
         this.scene.add(entity.object);
+    }
+    getHoveredEntity(event: MouseEvent) {
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2(( event.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1);
+
+        raycaster.setFromCamera( mouse, this.camera );
+
+        return raycaster.intersectObjects( this.entities.filter((entity) => entity.actionDescriptor).map((entity) => entity.object), true )[0];
     }
 }

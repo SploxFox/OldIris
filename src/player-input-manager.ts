@@ -34,6 +34,7 @@ export class PlayerInputManager {
                 sprint: false,
             }
         };
+        
     }
 
     update() {
