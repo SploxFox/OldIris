@@ -51,15 +51,17 @@ body {
 
 .scroll-out {
     opacity: 0;
-    animation: scroll-out 0.3s ease;
+    animation: scroll-out 0.7s ease;
 }
 
 @keyframes scroll-out {
     0%, 10% {
+        clip-path: inset(0% 0% 0% 0%);
         opacity: 1;
     }
     100% {
-        opacity: 0;
+        clip-path: inset(0% 100% 0% 0%);
+        opacity: 1;
     }
 }
 

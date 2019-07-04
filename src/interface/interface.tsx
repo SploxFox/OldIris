@@ -60,9 +60,7 @@ export class InterfaceComponent extends React.Component<{interface: Interface},{
         return (
             <div style={coverStyle}>
                 <DigitalController ref={(dc) => this.props.interface.digitalController = dc} inputStatus={this.props.interface.game.playerInputManager.inputStatus}></DigitalController>
-                <div className={this.state.hiding ? "scroll-out" : ""}>
-                    {this.state.hoveredEntity ? <ActionDescriptor location={this.state.mouseClientPos} text={this.state.hoveredEntity.action.displayText}></ActionDescriptor> : null}
-                </div>
+                {this.state.hoveredEntity ? <ActionDescriptor hiding={this.state.hiding} location={this.state.mouseClientPos} text={this.state.hoveredEntity.action.displayText}></ActionDescriptor> : null}
             </div>
         );
     }
