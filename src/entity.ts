@@ -1,10 +1,21 @@
 import * as React from "react";
 import { Vector3, Geometry, Vector } from "three";
 import { lerp, wrapAroundLerp } from "./math";
+import { FormattedText } from "./interface/formatted-text";
+import { Game } from "./game";
 
 var THREE = (window as any).THREE = require('three');
 require("three/examples/js/loaders/GLTFLoader");
 
+export class EntityAction {
+    range: number;
+    displayText: FormattedText;
+    constructor(private game: Game, public actionName: string) {
+        game.localizer.actionDescriptors.then((localizations) => {
+            this.displayText = FormattedText.parse(localizations[this.actionName]);
+        });
+    }
+}
 export class Entity {
     public object: THREE.Group;
     public gravity: boolean;
@@ -13,7 +24,7 @@ export class Entity {
     public collidable: boolean;
 
     public oldLines: THREE.Line[];
-    public actionDescriptor: string;
+    public action: EntityAction;
     constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
@@ -110,14 +121,15 @@ export class Entity {
 
     /**
      * Loads a collisionable entity from the paths given in the two parameters. This does not actually put the entity in the game; it just loads it into memory.
-     * @param visualMeshPath 
-     * @param collisionMeshPath 
+     * @param entityName The name of the entity (AKA the location of the entity's folder)
+     * @param lanugage The language of the mesh for those language-specific meshes. Do not include anything for universal meshes.
      */
-    static load(entityName: string): Promise<Entity>{
+    static load(entityName: string, language?: string): Promise<Entity>{
         
         var loader = new (THREE as any).GLTFLoader();
-        var visualMeshPath = "assets/entities/" + entityName + "/mesh.glb";
-        var collisionMeshPath = "assets/entities/" + entityName + "/collision.glb";
+        const folderLocation = `assets/${language ? language : "universal"}/entities/${entityName}/`;
+        const visualMeshPath = `${folderLocation}/mesh.glb`;
+        const collisionMeshPath = `${folderLocation}/collision.glb`;
 
         return new Promise((resolve, reject) => {
             var visualMesh: THREE.Mesh;

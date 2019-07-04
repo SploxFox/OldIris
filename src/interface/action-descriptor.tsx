@@ -12,11 +12,9 @@ export class ActionDescriptor extends React.Component<ActionDescriptorProps,{}> 
     render() {
         return (
             <div className="action-descriptor" style={{
-                left: this.props.location.x + "px",
-                top: this.props.location.y + "px",
-                backgroundColor: "rgba(0,0,0,0.5)",
-                position: "absolute"
-            }}>
+                "--x": this.props.location.x + "px",
+                "--y": this.props.location.y + "px"
+            } as any}>
                 <FormattedTextComponent formattedText={this.props.text}></FormattedTextComponent>
             </div>
         );

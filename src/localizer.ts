@@ -10,16 +10,16 @@ interface Localizations {
 }*/
 
 
-class Localizer {
+export class Localizer {
     actionDescriptors: Promise<Localizations>;
     
     constructor(readonly language: string){
         this.actionDescriptors = this.loadLocalizations("interface/action-descriptors")
     }
-    loadLocalizations(blockLocation: string) {
+    loadLocalizations(location: string) {
         return new Promise<Localizations>((resolve, reject) => {
             var request = new XMLHttpRequest();
-            request.open("GET", this.language + "/" + blockLocation);
+            request.open("GET", "assets/localized/" + this.language + "/" + location + ".json");
 
             request.onload = (ev) => {
                 if (request.readyState == 4) {

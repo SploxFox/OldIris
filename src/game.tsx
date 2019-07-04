@@ -7,6 +7,7 @@ import { PlayerInputManager, InputStatus } from "./player-input-manager";
 import { Vector3, Vector2 } from "three";
 import { ActionDescriptor } from "./interface/action-descriptor";
 import { Interface } from "./interface/interface";
+import { Localizer } from "./localizer";
 
 export class Game {
     element: HTMLElement;
@@ -23,9 +24,11 @@ export class Game {
         [index: string]: number | string;
     };
     private mouseTooltip: ActionDescriptor;
-    private container: HTMLDivElement;
+    private interfaceContainer: HTMLDivElement;
+    public localizer: Localizer;
+
     constructor() {
-        
+        this.localizer = new Localizer("english");
 
         this.entities = [];
         this.textVariables = {};
@@ -38,9 +41,11 @@ export class Game {
         document.head.appendChild(cssLink);
 
         //Player Input
-        var controllerDiv = document.createElement("div");
+        //var controllerDiv = document.createElement("div");
         PlayerInputManager.loadControlBindings().then((controlBindings) => {
             this.playerInputManager = new PlayerInputManager(controlBindings);
+            this.interface = new Interface(this);
+            this.element.appendChild(this.interface.element);
         });
         
         //THREE stuff
@@ -66,11 +71,9 @@ export class Game {
         //GUI
         this.element = document.createElement("div");
         this.element.appendChild(this.renderer.domElement);
-        this.element.appendChild(this.container);
+        
 
         this.animate();
-
-        this.interface = new Interface(this);
     }
     animate() {
         //window.setTimeout(this.animate.bind(this), 150)
@@ -89,7 +92,10 @@ export class Game {
             }
         }
         this.renderer.render(this.scene,this.camera);
-        this.interface.update();
+        if (this.interface) {
+            this.interface.update();
+        }
+        
     }
     get collisionableEntities(): Entity[] {
         return this.entities.filter((entity) => entity.collidable)
@@ -112,6 +118,13 @@ export class Game {
 
         raycaster.setFromCamera( mouse, this.camera );
 
-        return raycaster.intersectObjects( this.entities.filter((entity) => entity.actionDescriptor).map((entity) => entity.object), true )[0];
+        var intersectedObject = raycaster.intersectObjects( this.entities.filter((entity) => entity.action).map((entity) => entity.object), true )[0];
+        //console.log(intersectedObject);
+        if (intersectedObject) {
+            return this.entities.filter((entity) => intersectedObject.object == entity.visualMesh)[0];
+        } else {
+            return undefined;
+        }
+        
     }
 }

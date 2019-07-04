@@ -33,25 +33,33 @@ body {
 
 .formatted-text-character {
     display: inline-block;
+    color: white;
+    font-family: sans-serif;
+}
+
+.action-descriptor {
+    text-shadow: 2px 2px black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateX(calc(var(--x) + 15px)) translateY(calc(var(--y) + 15px));
 }
 
 .fade-in {
     animation: fade-in 0.5s ease;
 }
 
-.fall-out {
-    display: none;
+.scroll-out {
+    opacity: 0;
     animation: scroll-out 0.3s ease;
 }
 
 @keyframes scroll-out {
-    0% {
-        display: inline-block;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    0%, 10% {
+        opacity: 1;
     }
     100% {
-        display: inline-block;
-        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+        opacity: 0;
     }
 }
 
