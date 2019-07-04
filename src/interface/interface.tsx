@@ -25,12 +25,16 @@ export class Interface {
     }
 }
 
-export class InterfaceComponent extends React.Component<{interface: Interface},{mouseClientPos: Vector2}> {
-    
+export class InterfaceComponent extends React.Component<{interface: Interface},{mouseClientPos: Vector2, hiding: boolean}> {
+    private hideTimeout: number;
     constructor(props: any) {
         super(props);
-
+        
         window.addEventListener("mousemove", this.updateMouseTooltip);
+        this.state = {
+            mouseClientPos: new Vector2(0,0),
+            hiding: true
+        }
     }
 
     updateMouseTooltip(event: MouseEvent) {
@@ -43,6 +47,9 @@ export class InterfaceComponent extends React.Component<{interface: Interface},{
         return (
             <div>
                 <DigitalController ref={(dc) => this.props.interface.digitalController = dc} inputStatus={this.props.interface.game.playerInputManager.inputStatus}></DigitalController>
+                <div className={this.state.hiding ? "scroll-out" : ""}>
+                    <ActionDescriptor location={this.state.mouseClientPos} text={this.props.interface.game.getHoveredEntity(mouseClientPos)}></ActionDescriptor>
+                </div>
             </div>
         );
     }

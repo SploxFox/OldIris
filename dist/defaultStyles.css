@@ -39,13 +39,29 @@ body {
     animation: fade-in 0.5s ease;
 }
 
+.fall-out {
+    display: none;
+    animation: scroll-out 0.3s ease;
+}
+
+@keyframes scroll-out {
+    0% {
+        display: inline-block;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    100% {
+        display: inline-block;
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+}
+
 @keyframes fade-in {
     0% {
         transform: translateY(100%);
-        /*opacity: 0;*/
+        opacity: 0;
     }
     100% {
         transform: translateY(0%);
-        /*opacity: 1;*/
+        opacity: 1;
     }
 }

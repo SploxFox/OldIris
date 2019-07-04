@@ -106,9 +106,9 @@ export class Game {
         this.entities.push(entity);
         this.scene.add(entity.object);
     }
-    getHoveredEntity(event: MouseEvent) {
+    getHoveredEntity(mouseClientLocation: Vector2): Entity {
         var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2(( event.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1);
+        var mouse = new THREE.Vector2(( mouseClientLocation.x / this.renderer.domElement.clientWidth ) * 2 - 1, - (mouseClientLocation.y / this.renderer.domElement.clientHeight) * 2 + 1);
 
         raycaster.setFromCamera( mouse, this.camera );
 
