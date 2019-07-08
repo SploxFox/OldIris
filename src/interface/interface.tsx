@@ -48,7 +48,7 @@ export class InterfaceComponent extends React.Component<{interface: Interface},{
 
     updateMouseTooltip(event: MouseEvent) {
         const hoveredEntity = this.props.interface.game.getHoveredEntity(this.state.mouseClientPos);
-        console.log(hoveredEntity);
+        //console.log(hoveredEntity);
         this.setState({
             mouseClientPos: new Vector2(event.clientX, event.clientY),
             hoveredEntity: hoveredEntity ? hoveredEntity : this.state.hoveredEntity,

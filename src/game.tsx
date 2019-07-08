@@ -55,8 +55,9 @@ export class Game {
         this.camera.rotation.set((-1.8 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
         this.directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
-        this.directionalLight.position.set( 10, 5, -10 );
+        this.directionalLight.position.set( 10, 100, -10 );
         this.directionalLight.castShadow = true;
+        this.directionalLight.shadow.bias = -0.0001;
         
         this.scene.add(this.directionalLight);
         
@@ -87,6 +88,7 @@ export class Game {
             if(this.player) {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlVector = this.playerInputManager.controlVector;
+                this.camera.position.addVectors(this.player.object.position, new Vector3(0,20,7));
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
                 //console.log(this.player.checkForCollision(this.collisionableEntities, this.scene));
             }
@@ -105,7 +107,6 @@ export class Game {
     }
     set player(value: Entity) {
         this._player = value;
-        this.directionalLight.target = this.player.object;
     }
     addEntity(entity: Entity) {
         //console.log(entity);
