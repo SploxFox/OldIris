@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Vector3, Geometry, Vector, Raycaster } from "three";
+import { Vector3, Geometry, Vector, Raycaster, Mesh } from "three";
 import { lerp, wrapAroundLerp } from "./math";
 import { FormattedText } from "./interface/formatted-text";
 import { Game } from "./game";
@@ -18,14 +18,11 @@ export class EntityAction {
 }
 export class Entity {
     public object: THREE.Group;
-    public gravity: boolean;
-    private velocity: THREE.Vector3;
-    public controlVector: THREE.Vector2;
     public collidable: boolean;
 
     public oldLines: THREE.Line[];
     public action: EntityAction;
-    constructor(readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh, readonly game: Game) {
+    constructor(readonly game: Game, readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
         if (collisionMesh) {
@@ -38,35 +35,11 @@ export class Entity {
         this.visualMesh.castShadow = true;
         this.visualMesh.receiveShadow = true;
         this.collisionMesh.visible = false;
-        this.gravity = false;
-        this.velocity = new THREE.Vector3(0,0,0);
-        this.controlVector = new THREE.Vector3(0,0,0);
 
         this.oldLines = [];
     }
-    /**
-     * Function to be called every frame before render
-     * @param deltaTime Time since the last frame
-     */
     update(deltaTime: number) {
-        if (this.gravity && !this.onGround) {
-            this.velocity.add(new Vector3(0,-0.2 * deltaTime,0))
-        }
-        this.object.position.add(this.velocity);
-        this.velocity.multiplyScalar(0.95);
 
-        var arr = this.controlVector.toArray();
-        arr.splice(1,0,0);
-        this.object.position.add((new Vector3()).fromArray(arr).multiplyScalar(0.2));
-        if (this.controlVector.length() > 0) {
-            //console.log("Control Vector: " + this.controlVector.angle() * (180/Math.PI) + "  Current Rotation: " + this.object.rotation.y * (180/Math.PI));
-            this.object.rotation.y = wrapAroundLerp(this.object.rotation.y, this.controlVector.setX(this.controlVector.x * -1).angle(), 0.1, Math.PI * 2);
-        }
-    }
-    get onGround(): boolean {
-        var raycaster = new Raycaster(this.object.position, new Vector3(0, -1, 0), 0, 4);
-        var collisionableMeshes = this.game.collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh);
-        return raycaster.intersectObjects(collisionableMeshes, true).length > 0;
     }
 
     /**
@@ -74,8 +47,14 @@ export class Entity {
      * @param entityName The name of the entity (AKA the location of the entity's folder)
      * @param lanugage The language of the mesh for those language-specific meshes. Do not include anything for universal meshes.
      */
-    static load(entityName: string, game: Game, language?: string): Promise<Entity>{
-        
+    static load: Function = (entityName: string, game: Game, language?: string) => {
+        return new Promise<Entity>((resolve, reject) => {
+            Entity.loadMeshes(entityName, game, language).then((value: {game: Game, visualMesh: Mesh, collisionMesh: Mesh}) => {
+                resolve(new Entity(value.game, value.visualMesh, value.collisionMesh));
+            });
+        });
+    }
+    static loadMeshes(entityName: string, game: Game, language?: string): Promise<{game: Game, visualMesh: Mesh, collisionMesh: Mesh}> {
         var loader = new (THREE as any).GLTFLoader();
         const folderLocation = `assets/${language ? language : "universal"}/entities/${entityName}/`;
         const visualMeshPath = `${folderLocation}/mesh.glb`;
@@ -86,7 +65,7 @@ export class Entity {
             var collisionMesh: THREE.Mesh;
             var attemptToResolve = () => {
                 if (visualMesh && collisionMesh) {
-                    resolve(new Entity(visualMesh,collisionMesh, game))
+                    resolve({game: game, visualMesh: visualMesh, collisionMesh: collisionMesh})
                 }
             }
             loader.load(visualMeshPath, (returnedValue: any /*Suppose to be an object?*/) => {

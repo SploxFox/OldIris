@@ -8,6 +8,7 @@ import { Vector3, Vector2 } from "three";
 import { ActionDescriptor } from "./interface/action-descriptor";
 import { Interface } from "./interface/interface";
 import { Localizer } from "./localizer";
+import { Mob } from "./mob";
 
 export class Game {
     element: HTMLElement;
@@ -85,7 +86,7 @@ export class Game {
         if(this.playerInputManager) {
             this.playerInputManager.update();
             // -->   this.interface.digitalController.setStatus(this.playerInputManager.inputStatus);
-            if(this.player) {
+            if(this.player && this.player instanceof Mob) {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlVector = this.playerInputManager.controlVector;
                 this.camera.position.addVectors(this.player.object.position, new Vector3(0,20,7));
