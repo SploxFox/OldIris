@@ -1,4 +1,4 @@
-import { InputStatus } from "../player-input-manager";
+import { ControlStatus } from "../player-input-manager";
 import * as React from "react";
 /*
 const containerStyle = {
@@ -28,12 +28,12 @@ const stickTopStyle  = {
 };
 */
 
-export class DigitalController extends React.Component<{inputStatus: InputStatus},{inputStatus: InputStatus}> {
-    constructor(props: {inputStatus: InputStatus}) {
+export class DigitalController extends React.Component<{inputStatus: ControlStatus},{inputStatus: ControlStatus}> {
+    constructor(props: {inputStatus: ControlStatus}) {
         super(props);
         this.state = props;
     }
-    setStatus (inputStatus: InputStatus) {
+    setStatus (inputStatus: ControlStatus) {
         this.setState({inputStatus: inputStatus});
     }
     render() {

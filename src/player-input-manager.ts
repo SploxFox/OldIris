@@ -1,7 +1,7 @@
 import { ControlBindings, defaultControls, BoundKey } from "./controls";
 import { Vector2 } from "three";
 
-export interface InputStatus {
+export interface ControlStatus {
     movement: {
         controlVector: Vector2;
         jump: boolean;
@@ -12,7 +12,7 @@ export interface InputStatus {
 
 export class PlayerInputManager {
     private keysDown: string[];
-    public inputStatus: InputStatus;
+    public inputStatus: ControlStatus;
     constructor(readonly controlBindings: ControlBindings) {
         this.keysDown = [];
         window.addEventListener("keydown",(ev) => {
@@ -49,11 +49,13 @@ export class PlayerInputManager {
         for (var control in this.controlBindings.movement) {
             if (control == "directions") {
                 continue;
-            } else if (this.keysDown.includes((this.controlBindings.movement as any)[control] as any)) {
+            } else if (this.keysDown.includes(((this.controlBindings.movement as any)[control] as BoundKey).code)) {
                 (this.inputStatus.movement as any)[control] = true;
             }
         };
         this.inputStatus.movement.controlVector = this.controlVector;
+        console.table(this.inputStatus.movement);
+        //console.log(this.keysDown);
     }
 
     /**

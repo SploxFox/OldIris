@@ -3,7 +3,7 @@ import { Entity } from "./entity";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { DigitalController } from "./interface/digital-controller";
-import { PlayerInputManager, InputStatus } from "./player-input-manager";
+import { PlayerInputManager, ControlStatus } from "./player-input-manager";
 import { Vector3, Vector2 } from "three";
 import { ActionDescriptor } from "./interface/action-descriptor";
 import { Interface } from "./interface/interface";
@@ -88,7 +88,7 @@ export class Game {
             // -->   this.interface.digitalController.setStatus(this.playerInputManager.inputStatus);
             if(this.player && this.player instanceof Mob) {
                 //this.camera.lookAt(this.player.object.position);
-                this.player.controlVector = this.playerInputManager.controlVector;
+                this.player.controlStatus = this.playerInputManager.inputStatus;
                 this.camera.position.addVectors(this.player.object.position, new Vector3(0,20,7));
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
                 //console.log(this.player.checkForCollision(this.collisionableEntities, this.scene));
