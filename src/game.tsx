@@ -4,11 +4,12 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { DigitalController } from "./interface/digital-controller";
 import { PlayerInputManager, ControlStatus } from "./player-input-manager";
-import { Vector3, Vector2 } from "three";
+import { Vector3, Vector2, Group, HemisphereLight, Color } from "three";
 import { ActionDescriptor } from "./interface/action-descriptor";
 import { Interface } from "./interface/interface";
 import { Localizer } from "./localizer";
 import { Mob } from "./mob";
+import { CpuInfo } from "os";
 
 export class Game {
     element: HTMLElement;
@@ -24,9 +25,11 @@ export class Game {
     public textVariables: {
         [index: string]: number | string;
     };
-    private mouseTooltip: ActionDescriptor;
     private interfaceContainer: HTMLDivElement;
     public localizer: Localizer;
+    private playerFollower: Group;
+    readonly skyColor: Color;
+    readonly groundColor: Color;
 
     constructor() {
         this.localizer = new Localizer("english");
@@ -50,8 +53,12 @@ export class Game {
         });
         
         //THREE stuff
+        this.playerFollower = new Group();
+        this.playerFollower.position.set(0,0,0);
+
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        this.playerFollower.add(this.camera);
         this.camera.position.set(0,20,7);
         this.camera.rotation.set((-1.8 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
@@ -59,29 +66,38 @@ export class Game {
         this.directionalLight.position.set( -30, 100, -30 );
         this.directionalLight.castShadow = true;
         this.directionalLight.shadow.bias = -0.001;
-        this.directionalLight.shadow.camera.left = 70;
-        this.directionalLight.shadow.camera.top = 70;
-        this.directionalLight.shadow.camera.right = -70;
-        this.directionalLight.shadow.camera.bottom = -70;
-        this.directionalLight.shadow.mapSize = new Vector2(2048, 2048);
+        this.directionalLight.shadow.camera.left = 20;
+        this.directionalLight.shadow.camera.top = 20;
+        this.directionalLight.shadow.camera.right = -20;
+        this.directionalLight.shadow.camera.bottom = -20;
+        this.directionalLight.shadow.mapSize = new Vector2(1024, 1024);
         
-        var helper = new THREE.CameraHelper( this.directionalLight.shadow.camera );
-        this.scene.add( helper );
+        this.playerFollower.add(this.directionalLight);
         
-        this.scene.add(this.directionalLight);
+        //var helper = new THREE.CameraHelper( this.directionalLight.shadow.camera );
+        //this.scene.add( helper );
         
-        var ambientLight = new THREE.AmbientLight( 0xffffff, 0.6);
-        this.scene.add(ambientLight);
+        //var ambientLight = new THREE.AmbientLight( 0xffffff, 0.6);
+        //this.scene.add(ambientLight);
+        this.skyColor = new Color();
+        this.groundColor = new Color();
+        this.skyColor.setHSL( 0.6, 1, 0.6 );
+        this.groundColor.setHSL( 0.095, 1, 0.75 );
+        
+        var hemisphereLight = new HemisphereLight(this.skyColor, this.groundColor, 0.6);
+        this.scene.add(hemisphereLight);
+        this.scene.background = new Color(this.skyColor);
 
         this.renderer = new THREE.WebGLRenderer(/*{alpha: true}*/);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
         this.renderer.setSize( window.innerWidth, window.innerHeight );
 
+        this.scene.add(this.playerFollower);
+
         //GUI
         this.element = document.createElement("div");
         this.element.appendChild(this.renderer.domElement);
-        
 
         this.animate();
     }
@@ -97,7 +113,9 @@ export class Game {
             if(this.player && this.player instanceof Mob) {
                 //this.camera.lookAt(this.player.object.position);
                 this.player.controlStatus = this.playerInputManager.inputStatus;
-                this.camera.position.addVectors(this.player.object.position, new Vector3(0,20,7));
+                //this.camera.position.addVectors(this.player.object.position, new Vector3(0,20,7));
+                this.playerFollower.position.copy(this.player.object.position);
+                //console.log(this.playerFollower.position);
                 //this.camera.rotation.set(this.playerInputManager.controlVector.x * 0.5, this.playerInputManager.controlVector.y * 0.5, 0);
                 //console.log(this.player.checkForCollision(this.collisionableEntities, this.scene));
             }
@@ -116,6 +134,7 @@ export class Game {
     }
     set player(value: Entity) {
         this._player = value;
+        this.directionalLight.target = value.object;
     }
     addEntity(entity: Entity) {
         //console.log(entity);

@@ -7,7 +7,7 @@ export class MobCollision {
     readonly downSnapRange: number;
     downLength: number;
     constructor(readonly collisionProperties: CollisionProperties) {
-        this.downSnapRange = 0.05;
+        this.downSnapRange = 0.1;
         this.downLength = collisionProperties.downLength;
         this._downRaycaster = new Raycaster(new Vector3(0,0,0), new Vector3(0, -1, 0), 0, this.downLength + this.downSnapRange);
     }
