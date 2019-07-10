@@ -56,9 +56,17 @@ export class Game {
         this.camera.rotation.set((-1.8 * Math.PI)/4, 0, 0); //rotation.set((-1.3 * Math.PI)/4, 0, 0);
 
         this.directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
-        this.directionalLight.position.set( 10, 100, -10 );
+        this.directionalLight.position.set( -30, 100, -30 );
         this.directionalLight.castShadow = true;
-        this.directionalLight.shadow.bias = -0.0001;
+        this.directionalLight.shadow.bias = -0.001;
+        this.directionalLight.shadow.camera.left = 70;
+        this.directionalLight.shadow.camera.top = 70;
+        this.directionalLight.shadow.camera.right = -70;
+        this.directionalLight.shadow.camera.bottom = -70;
+        this.directionalLight.shadow.mapSize = new Vector2(2048, 2048);
+        
+        var helper = new THREE.CameraHelper( this.directionalLight.shadow.camera );
+        this.scene.add( helper );
         
         this.scene.add(this.directionalLight);
         

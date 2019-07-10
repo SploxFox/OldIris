@@ -54,7 +54,7 @@ export class PlayerInputManager {
             }
         };
         this.inputStatus.movement.controlVector = this.controlVector;
-        console.table(this.inputStatus.movement);
+        //console.table(this.inputStatus.movement);
         //console.log(this.keysDown);
     }
 

@@ -28,7 +28,7 @@ export class Mob extends Entity {
             }
         }
 
-        this.mobCollision = new MobCollision(this, collisionProperties);
+        this.mobCollision = new MobCollision(collisionProperties);
     }
      /**
      * Function to be called every frame before render
@@ -38,24 +38,34 @@ export class Mob extends Entity {
         super.update(deltaTime);
 
         var downIntersection = this.castToGround()[0];
+        var controlInfluence = 0.01;
         if (downIntersection) {
-            this.velocity.y = 0;
+            if (this.velocity.y < 0) {
+                this.velocity.y = 0;
+            }
             this.snapToGround(downIntersection);
+            this.velocity.multiplyScalar(0.5);
+            controlInfluence = 0.2;
         } else if (this.gravity) {
             this.velocity.add(new Vector3(0,-0.05 * deltaTime,0))
         }
-        this.object.position.add(this.velocity);
-        this.velocity.multiplyScalar(0.95);
-
+        //this.object.position.add(this.velocity);
         var arr = this.controlStatus.movement.controlVector.toArray();
         arr.splice(1,0,0);
-        this.object.position.add((new Vector3()).fromArray(arr).multiplyScalar(0.2));
+        this.velocity.add((new Vector3()).fromArray(arr).multiplyScalar(controlInfluence));
+
+        var nextPosition = this.mobCollision.getNextValidPosition(this.object.position, this.object.position.clone().add(this.velocity), this.game.collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh));
+        this.object.position.set(nextPosition.x, nextPosition.y, nextPosition.z);
+
+        this.velocity.multiplyScalar(0.95);
+
+        
         if (this.controlStatus.movement.controlVector.length() > 0) {
             //console.log("Control Vector: " + this.controlVector.angle() * (180/Math.PI) + "  Current Rotation: " + this.object.rotation.y * (180/Math.PI));
             this.object.rotation.y = wrapAroundLerp(this.object.rotation.y, this.controlStatus.movement.controlVector.setX(this.controlStatus.movement.controlVector.x * -1).angle(), 0.1, Math.PI * 2);
         }
         if (this.controlStatus.movement.jump && downIntersection) {
-            this.velocity.add(new Vector3(0,10,0));
+            this.velocity.add(new Vector3(0,0.5,0));
             console.log("jump");
         }
     }
@@ -63,7 +73,7 @@ export class Mob extends Entity {
         return this.castToGround().length > 0;
     }
     castToGround(): Intersection[] {
-        return this.mobCollision.downRaycaster.intersectObjects(this.game.collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh), true);
+        return this.mobCollision.getDownRaycaster(this.object.position).intersectObjects(this.game.collisionableEntities.filter((entity) => entity != this).map((entity) => entity.visualMesh), true);
     }
     snapToGround(groundIntersection: Intersection) {
         this.object.position.y = groundIntersection.point.y + this.mobCollision.downLength;
