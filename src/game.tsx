@@ -4,12 +4,12 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { DigitalController } from "./interface/digital-controller";
 import { PlayerInputManager, ControlStatus } from "./player-input-manager";
-import { Vector3, Vector2, Group, HemisphereLight, Color } from "three";
+import { Vector3, Vector2, Group, HemisphereLight, Color, MeshToonMaterial } from "three";
 import { ActionDescriptor } from "./interface/action-descriptor";
 import { Interface } from "./interface/interface";
 import { Localizer } from "./localizer";
 import { Mob } from "./mob";
-import { CpuInfo } from "os";
+import 'three/examples/js/controls/OrbitControls';
 
 export class Game {
     element: HTMLElement;
@@ -30,6 +30,7 @@ export class Game {
     private playerFollower: Group;
     readonly skyColor: Color;
     readonly groundColor: Color;
+    
 
     constructor() {
         this.localizer = new Localizer("english");
@@ -98,6 +99,14 @@ export class Game {
         //GUI
         this.element = document.createElement("div");
         this.element.appendChild(this.renderer.domElement);
+
+        /*var geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
+        var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+        var torusKnot = new THREE.Mesh( geometry, material );
+        torusKnot.material = new MeshToonMaterial();
+        this.scene.add( torusKnot );*/
+
+        var controls = new (THREE as any).OrbitControls(this.camera, this.renderer.domElement);
 
         this.animate();
     }
