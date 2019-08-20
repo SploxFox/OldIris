@@ -6,11 +6,19 @@ export class FormattedTextSet {
     value: string | number;
 }
 export class FormattedTextCommand {
-    name: string;
-    parameters: number[] | string[];
+    constructor(public name: string, public args: {[index: string]: number | string}) {
+
+    }
 }
-export class FormattedTextString extends String {
-    
+export class FormattedTextStop {
+    constructor(){
+
+    }
+}
+export class FormattedTextString {
+    constructor(public string: string, public classes: string[] = []) {
+
+    }
 }
 export class FormattedTextClassOpen extends String {
     
@@ -19,17 +27,54 @@ export class FormattedTextClassClose extends String {
     
 }
 
-export class FormattedText extends Array<FormattedTextSet | string | FormattedTextClassOpen | FormattedTextClassClose> {
+export class FormattedText extends Array<FormattedTextSet | FormattedTextClassOpen | FormattedTextClassClose | FormattedTextCommand | FormattedTextStop> {
     static parse(string: string): FormattedText {
-        var formattedText: FormattedText = [];
-        for (var i = 0; i < string.length; i++) {
-            if (string[i] == "#" && string[i + 1] == "#") {
-                string.substr(i + 2, string.substring(i).indexOf(";"))
+        let formattedText: FormattedText = [];
+        let currentClasses: string[] = [];
+        for (let i = 0; i < string.length; i++) {
+            if (string[i] == "$" && string[i + 1] == "$") {
+                const command = string.substr(i + 2, string.substring(i).indexOf(";") - 3).split("(");
+                const commandArgs = JSON.parse(command[1]);
                 i = i + string.substring(i).indexOf(";");
+                //console.log(commandString);
+                formattedText.push(new FormattedTextCommand(
+                    command[0],
+                    commandArgs as {[index: string]: number | string}
+                ));
+            } else if (string[i] == ">" && string[i + 1] == ">") {
+                const newSpeaker = string.substr(i + 2, string.substring(i).indexOf(";") - 2);
+                //const commandArgs = JSON.parse(command[1]);
+                i = i + string.substring(i).indexOf(";");
+                //console.log(commandString);
+                formattedText.push(new FormattedTextCommand(
+                    "setSpeaker",
+                    {
+                        newSpeaker: newSpeaker
+                    }
+                ));
+            } else if (string[i] == "#") {
+                formattedText.push(new FormattedTextStop());
+            } else if (string[i] == "<") {
+                let styleClass = "";
+                if (string[i + 1] == "/") {
+                    styleClass = string.substr(i + 2, string.substring(i + 2).indexOf(">"));
+                } else {
+                    styleClass = string.substr(i + 1, string.substring(i + 1).indexOf(">"));
+                }
+
+                if (string[i + 1] == "/") {
+                    currentClasses.splice(currentClasses.indexOf(styleClass), 1);
+                    
+                } else {
+                    currentClasses.push(styleClass);
+                }
+
+                i = i + string.substring(i).indexOf(">");
             } else {
-                formattedText.push(string[i]);
+                formattedText.push(new FormattedTextString(string[i].replace("\n",""), currentClasses.slice()));
             }
         }
+        console.log(formattedText)
         return formattedText;
     }
 }
@@ -41,9 +86,7 @@ interface FormattedTextProps {
 }
 
 export interface FormattedTextState {
-    renderedText: FormattedText;
-    allText: FormattedText;
-    blockIndex: number;
+    text: FormattedText;
 }
 
 export interface FormattedTextVariables {
@@ -53,20 +96,20 @@ export interface FormattedTextVariables {
     //characterInBlockIndex: number;
 }
 
-export class FormattedTextComponent extends React.Component<FormattedTextProps,FormattedTextState> {
+/*export class FormattedTextComponent extends React.Component<FormattedTextProps,FormattedTextState> {
     public finished: boolean;
-    public textVariables: FormattedTextVariables;
+    //public textVariables: FormattedTextVariables;
     public textClasses: string[];
     constructor(props: FormattedTextProps, public game: Game) {
         super(props);
 
-        this.finished = false;
+        //this.finished = false;
         this.state = {
-            allText: this.props.formattedText,
-            renderedText: this.props.formattedText,
-            blockIndex: 0
+            text: this.props.formattedText,
+            //renderedText: this.props.formattedText,
+            //blockIndex: 0
         };
-        this.textVariables = {
+        /*this.textVariables = {
             timeBetweenCharacters: 100,
             blockIndex: 0,
             characterInBlockIndex: 0
@@ -74,17 +117,17 @@ export class FormattedTextComponent extends React.Component<FormattedTextProps,F
         this.textClasses = [];
     }
     render() {
-        var characters = [];
-        for (var i = 0; i < this.state.blockIndex; i++) {
+        let characters = [];
+        for (let i = 0; i < this.state.text.length; i++) {
             //characters.push(this.state.allText[i]);
-            if (typeof this.state.allText[i] == "string") {
-                characters.push(<FormattedTextCharacter character={this.state.allText[i] as string} classes={this.textClasses}></FormattedTextCharacter>);
-            } else if (this.state.allText[i] instanceof FormattedTextSet) {
-                this.textVariables[(this.state.allText[i] as FormattedTextSet).name] = (this.state.allText[i] as FormattedTextSet).value;
-            } else if (this.state.allText[i] instanceof FormattedTextClassClose) {
-                this.textClasses.splice(this.textClasses.indexOf(this.state.allText[i] as string));
-            } else if (this.state.allText[i] instanceof FormattedTextClassOpen) {
-                this.textClasses.push(this.state.allText[i] as string);
+            if (typeof this.state.text[i] == "string") {
+                characters.push(<FormattedTextCharacter character={this.state.text[i] as string} classes={this.textClasses}></FormattedTextCharacter>);
+            } else if (this.state.text[i] instanceof FormattedTextSet) {
+                //this.textVariables[(this.state.text[i] as FormattedTextSet).name] = (this.state.text[i] as FormattedTextSet).value;
+            } else if (this.state.text[i] instanceof FormattedTextClassClose) {
+                this.textClasses.splice(this.textClasses.indexOf(this.state.text[i] as string));
+            } else if (this.state.text[i] instanceof FormattedTextClassOpen) {
+                this.textClasses.push(this.state.text[i] as string);
             }
         }
         if (this.state.blockIndex < this.state.allText.length) {
@@ -98,7 +141,7 @@ export class FormattedTextComponent extends React.Component<FormattedTextProps,F
             }</span>
         )
     }
-}
+}*/
 
 interface FormattedTextCharacterProps {
     character: string;
@@ -107,6 +150,6 @@ interface FormattedTextCharacterProps {
 
 export class FormattedTextCharacter extends React.Component<FormattedTextCharacterProps,{}> {
     render() {
-        return <span className={"formatted-text-character fade-in" + this.props.classes.join(" ")}>{this.props.character}</span>
+        return <span className={"formatted-text-character " + this.props.classes.join(" ") + (this.props.character == " " ? "" : " non-space-character")}>{this.props.character}</span>
     }
 }

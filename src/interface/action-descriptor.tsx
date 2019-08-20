@@ -1,7 +1,8 @@
-import { FormattedText, FormattedTextComponent } from "./formatted-text";
+import { FormattedText} from "./formatted-text";
 import { Vector2 } from "three";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { FormattedTextComponent } from "./formatted-text-component";
 
 export interface ActionDescriptorProps {
     text: FormattedText;
