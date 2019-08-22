@@ -1,5 +1,5 @@
-import { FormattedText, FormattedTextCommand, FormattedTextStop } from "./formatted-text";
-import { FormattedTextComponent } from "./formatted-text-component";
+import { FormattedText, FormattedTextCommand, FormattedTextStop } from "../formatted-text";
+import { FormattedTextComponent } from "../formatted-text-component";
 import * as React from "react";
 
 
