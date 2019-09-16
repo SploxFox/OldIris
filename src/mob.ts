@@ -1,6 +1,6 @@
 import { Entity } from "./entity";
 import { Mesh, Vector3, Vector2, Raycaster, Intersection } from "three";
-import { Game } from ".";
+import { App } from ".";
 import { wrapAroundLerp } from "./math";
 import { MobCollision } from "./mob-collision";
 import { ControlStatus } from "./player-input-manager";
@@ -15,7 +15,7 @@ export class Mob extends Entity {
     public controlStatus: ControlStatus;
     public mobCollision: MobCollision;
 
-    constructor(game: Game, visualMesh: Mesh, collisionMesh: Mesh, collisionProperties: CollisionProperties) {
+    constructor(game: App, visualMesh: Mesh, collisionMesh: Mesh, collisionProperties: CollisionProperties) {
         super(game, visualMesh, collisionMesh)
         this.velocity = new Vector3(0,0,0);
         this.gravity = false;
@@ -79,7 +79,7 @@ export class Mob extends Entity {
         this.object.position.y = groundIntersection.point.y + this.mobCollision.downLength;
     }
 
-    static load: Function = (entityName: string, game: Game, collisionProperties: CollisionProperties, language?: string) => {
+    static load: Function = (entityName: string, game: App, collisionProperties: CollisionProperties, language?: string) => {
         return Entity.loadMeshes(entityName, game, language).then((value) => {
             return new Mob(game, value.visualMesh, value.collisionMesh, collisionProperties);
         })

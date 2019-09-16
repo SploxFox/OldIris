@@ -1,5 +1,5 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
-import { Game } from "./game";
+import { App } from "./app";
 
-export { Game };
+export { App as App };

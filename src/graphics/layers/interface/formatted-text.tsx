@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Game } from "..";
 
 export class FormattedTextSet {
     name: string;
@@ -27,15 +26,21 @@ export class FormattedTextClassClose extends String {
     
 }
 
-export class FormattedText extends Array<FormattedTextSet | FormattedTextClassOpen | FormattedTextClassClose | FormattedTextCommand | FormattedTextStop> {
+export class FormattedText extends Array<FormattedTextSet | FormattedTextClassOpen | FormattedTextClassClose | FormattedTextCommand | FormattedTextStop | FormattedTextString> {
     static parse(string: string): FormattedText {
-        let formattedText: FormattedText = [];
+        let formattedText: FormattedText = new FormattedText();
+        console.log(formattedText);
         let currentClasses: string[] = [];
         for (let i = 0; i < string.length; i++) {
-            if (string[i] == "$" && string[i + 1] == "$") {
-                const command = string.substr(i + 2, string.substring(i).indexOf(";") - 3).split("(");
-                const commandArgs = JSON.parse(command[1]);
+            if (string[i] == "/" && string[i + 1] == "/") {
                 i = i + string.substring(i).indexOf(";");
+            } else if (string[i] == "$" && string[i + 1] == "$") {
+                const command = string.substr(i + 2, string.substring(i).replace(/\\\;/g, "  ").indexOf(";") - 3).split("(");
+                console.log(command);
+                const commandArgs = JSON.parse(command[1]);
+
+                //const stringWithoutFakeSemicolons = string;
+                i = i + string.substring(i).replace(/\\\;/g, "  ").indexOf(";");
                 //console.log(commandString);
                 formattedText.push(new FormattedTextCommand(
                     command[0],
@@ -146,10 +151,32 @@ export interface FormattedTextVariables {
 interface FormattedTextCharacterProps {
     character: string;
     classes: string[];
+    invisible?: boolean;
 }
 
-export class FormattedTextCharacter extends React.Component<FormattedTextCharacterProps,{}> {
+interface FormattedTextCharacterState {
+    invisible: boolean;
+}
+
+export class FormattedTextCharacter extends React.Component<FormattedTextCharacterProps,FormattedTextCharacterState> {
+    constructor(props: FormattedTextCharacterProps) {
+        super(props);
+
+        this.state = {
+            invisible: this.props.invisible
+        }
+    }
     render() {
-        return <span className={"formatted-text-character " + this.props.classes.join(" ") + (this.props.character == " " ? "" : " non-space-character")}>{this.props.character}</span>
+        return <span className="formatted-text-character-container" style={{position: "relative"}}>
+            <span style={{visibility: "hidden"}}>{this.props.character}</span>
+            <span style={{
+            visibility: this.state.invisible ? "hidden" : "visible",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            display: "block"
+        }} className={(this.state.invisible ? "invisible" : "") + " formatted-text-character " + this.props.classes.join(" ") + (this.props.character == " " ? "" : " non-space-character")}>{this.props.character}</span></span>
     }
 }

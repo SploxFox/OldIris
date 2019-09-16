@@ -33,7 +33,7 @@ body {
 
 .formatted-text-character {
     display: inline-block;
-    color: white;
+    /*color: white;*/
     font-family: sans-serif;
 }
 
@@ -52,6 +52,14 @@ body {
 .scroll-out {
     opacity: 0;
     animation: scroll-out 0.7s ease;
+}
+
+.layer {
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    position: absolute;
 }
 
 @keyframes scroll-out {

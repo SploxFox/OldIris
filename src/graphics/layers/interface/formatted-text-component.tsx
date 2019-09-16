@@ -11,9 +11,9 @@ export class FormattedTextComponent extends React.Component<FormattedTextCompone
         for (var i = 0; i < this.props.formattedText.length; i++) {
             //characters.push(this.state.allText[i]);
             if (typeof this.props.formattedText[i] == "string") {
-                characters.push(<FormattedTextCharacter character={this.props.formattedText[i] as string} classes={textClasses}></FormattedTextCharacter>);
+                characters.push(<FormattedTextCharacter character={this.props.formattedText[i] as string} classes={textClasses} key={i}></FormattedTextCharacter>);
             } else if (this.props.formattedText[i] instanceof FormattedTextString) {
-                characters.push(<FormattedTextCharacter character={(this.props.formattedText[i] as FormattedTextString).string} classes={(this.props.formattedText[i] as FormattedTextString).classes}></FormattedTextCharacter>)
+                characters.push(<FormattedTextCharacter character={(this.props.formattedText[i] as FormattedTextString).string} key={i} classes={(this.props.formattedText[i] as FormattedTextString).classes}></FormattedTextCharacter>)
             }else if (this.props.formattedText[i] instanceof FormattedTextSet) {
                 //this.textVariables[(this.props.formattedText[i] as FormattedTextSet).name] = (this.props.formattedText[i] as FormattedTextSet).value;
             } else if (this.props.formattedText[i] instanceof FormattedTextClassClose) {
@@ -24,7 +24,7 @@ export class FormattedTextComponent extends React.Component<FormattedTextCompone
         }
 
         return(
-            <span className="formattedText">{
+            <span className="formatted-text">{
                 characters
             }</span>
         )

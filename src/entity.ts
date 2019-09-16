@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Vector3, Geometry, Vector, Raycaster, Mesh } from "three";
 import { lerp, wrapAroundLerp } from "./math";
-import { FormattedText } from "./interface/formatted-text";
-import { Game } from "./game";
+import { FormattedText } from "./graphics/layers/interface/formatted-text";
+import { App } from "./app";
 
 var THREE = (window as any).THREE = require('three');
 require("three/examples/js/loaders/GLTFLoader");
@@ -10,7 +10,7 @@ require("three/examples/js/loaders/GLTFLoader");
 export class EntityAction {
     range: number;
     displayText: FormattedText;
-    constructor(private game: Game, public actionName: string) {
+    constructor(private game: App, public actionName: string) {
         game.localizer.actionDescriptors.then((localizations) => {
             this.displayText = FormattedText.parse(localizations[this.actionName]);
         });
@@ -22,7 +22,7 @@ export class Entity {
 
     public oldLines: THREE.Line[];
     public action: EntityAction;
-    constructor(readonly game: Game, readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
+    constructor(readonly game: App, readonly visualMesh: THREE.Mesh, readonly collisionMesh?: THREE.Mesh) {
         this.object = new THREE.Group();
         this.object.add(this.visualMesh);
         if (collisionMesh) {
@@ -47,14 +47,14 @@ export class Entity {
      * @param entityName The name of the entity (AKA the location of the entity's folder)
      * @param lanugage The language of the mesh for those language-specific meshes. Do not include anything for universal meshes.
      */
-    static load: Function = (entityName: string, game: Game, language?: string) => {
+    static load: Function = (entityName: string, game: App, language?: string) => {
         return new Promise<Entity>((resolve, reject) => {
-            Entity.loadMeshes(entityName, game, language).then((value: {game: Game, visualMesh: Mesh, collisionMesh: Mesh}) => {
+            Entity.loadMeshes(entityName, game, language).then((value: {game: App, visualMesh: Mesh, collisionMesh: Mesh}) => {
                 resolve(new Entity(value.game, value.visualMesh, value.collisionMesh));
             });
         });
     }
-    static loadMeshes(entityName: string, game: Game, language?: string): Promise<{game: Game, visualMesh: Mesh, collisionMesh: Mesh}> {
+    static loadMeshes(entityName: string, game: App, language?: string): Promise<{game: App, visualMesh: Mesh, collisionMesh: Mesh}> {
         var loader = new (THREE as any).GLTFLoader();
         const folderLocation = `assets/${language ? language : "universal"}/entities/${entityName}/`;
         const visualMeshPath = `${folderLocation}/mesh.glb`;
